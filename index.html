@@ -14,7 +14,7 @@
         :root {
             --bg: #6A1A41;
             --panel: #6A1A41;
-            --frame-gap-bg: rgba(0, 0, 0, 0.22);
+            --frame-gap-gradient: radial-gradient(130% 120% at 50% 50%, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.16) 48%, rgba(0, 0, 0, 0.08) 75%, rgba(0, 0, 0, 0) 100%);
             --text: #E4D700;
             --muted: #E4D700;
         }
@@ -103,7 +103,7 @@
 
         #my-gallery {
             border: 0;
-            background: var(--frame-gap-bg);
+            background: var(--frame-gap-gradient);
             border-radius: 0;
             padding: 0;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
@@ -151,6 +151,7 @@
             gap: 6px;
             border-radius: 0;
             overflow: hidden;
+            background: transparent;
         }
 
         .grid-wall {
@@ -160,7 +161,7 @@
             gap: 6px;
             overflow: hidden;
             border-radius: 0;
-            background: var(--frame-gap-bg);
+            background: transparent;
             transition: grid-template-columns 700ms cubic-bezier(.16, 1, .3, 1), grid-template-rows 700ms cubic-bezier(.16, 1, .3, 1);
         }
 
@@ -173,7 +174,7 @@
             border-radius: 0;
             overflow: hidden;
             cursor: pointer;
-            background: var(--frame-gap-bg);
+            background: transparent;
             isolation: isolate;
             touch-action: manipulation;
             transition: transform 700ms cubic-bezier(.16, 1, .3, 1), z-index 0s linear;

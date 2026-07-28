@@ -101,11 +101,11 @@
         }
 
         #my-gallery {
-            border: 0.5px solid rgba(255, 255, 255, 0.1);
-            background: var(--panel);
+            border: 0;
+            background: transparent;
             border-radius: 0;
-            padding: 12px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            padding: 0;
+            box-shadow: none;
         }
 
         .below-row {
@@ -147,7 +147,7 @@
 
         .grid-stack {
             display: grid;
-            gap: 6px;
+            gap: 0;
             border-radius: 0;
             overflow: hidden;
         }
@@ -156,7 +156,7 @@
             display: grid;
             height: min(64vh, 760px);
             min-height: 420px;
-            gap: 6px;
+            gap: 0;
             overflow: hidden;
             border-radius: 0;
             background: var(--panel);
@@ -207,7 +207,7 @@
             content: "";
             position: absolute;
             inset: 0;
-            border: 0.5px solid #6A1A41;
+            border: 0;
             pointer-events: none;
             z-index: 2;
         }
@@ -307,7 +307,7 @@
 
             #my-gallery {
                 border-radius: 0;
-                padding: 8px;
+                padding: 0;
             }
 
             .grid-wall {

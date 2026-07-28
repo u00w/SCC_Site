@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html>
+    <!-- MVP video playback and 1800 image cache-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+    <title>Students as Co-Creators | Emergency Vehicle Simulation</title>
+    <meta name="description" content="A student-built emergency vehicle simulation platform for co-creation, exploration, and iteration.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/config.js" type="text/javascript"></script>
+    <style>
+        :root {
+            --bg: #D95C77;
+            --panel: #000000;
+            --text: #E0EDA6;
+            --muted: #9a9a9a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: "Space Grotesk", sans-serif;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .page-shell {
+            width: min(1280px, 100%);
+            margin: 0 auto;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .top-row {
+            margin-top: 12px;
+            margin-bottom: 24px;
+            padding: 0 6px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .title {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 54px);
+            line-height: 1.02;
+            letter-spacing: -0.02em;
+            font-weight: 400;
+        }
+
+        .subtitle {
+            margin: 10px 0 0;
+            max-width: 62ch;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .refresh-btn {
+            appearance: none;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            color: var(--text);
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 18px;
+            line-height: 1.2;
+            letter-spacing: 0.04em;
+            text-transform: lowercase;
+            white-space: nowrap;
+            background: none;
+            cursor: pointer;
+            transition: opacity 160ms ease;
+        }
+
+        .refresh-btn:hover,
+        .refresh-btn:focus-visible {
+            opacity: 0.78;
+            outline: none;
+        }
+
+        #status {
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #f1d2c7;
+        }
+
+        #my-gallery {
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+            background: var(--panel);
+            border-radius: 0;
+            padding: 12px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+        }
+
+        .below-row {
+            margin-top: 12px;
+            padding: 0 6px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .autoplay-toggle-btn {
+            appearance: none;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            color: var(--text);
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 18px;
+            line-height: 1.2;
+            letter-spacing: 0.04em;
+            text-transform: lowercase;
+            white-space: nowrap;
+            background: none;
+            cursor: pointer;
+            transition: opacity 160ms ease;
+        }
+
+        .autoplay-toggle-btn:hover,
+        .autoplay-toggle-btn:focus-visible {
+            opacity: 0.78;
+            outline: none;
+        }
+
+        .autoplay-toggle-state {
+            display: inline-block;
+            width: 3ch;
+            text-align: left;
+        }
+
+        .grid-stack {
+            display: grid;
+            gap: 6px;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .grid-wall {
+            display: grid;
+            height: min(64vh, 760px);
+            min-height: 420px;
+            gap: 6px;
+            overflow: hidden;
+            border-radius: 0;
+            background: var(--panel);
+            transition: grid-template-columns 700ms cubic-bezier(.16, 1, .3, 1), grid-template-rows 700ms cubic-bezier(.16, 1, .3, 1);
+        }
+
+        .grid-item {
+            position: relative;
+            display: block;
+            appearance: none;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            overflow: hidden;
+            cursor: pointer;
+            background: #0b0b0b;
+            isolation: isolate;
+            touch-action: manipulation;
+            transition: transform 700ms cubic-bezier(.16, 1, .3, 1), z-index 0s linear;
+        }
+
+        .grid-item:hover,
+        .grid-item:focus-visible {
+            outline: 2px solid transparent;
+        }
+
+        .grid-thumb {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: calc(50% + var(--touch-pan-x)) calc(50% + var(--touch-pan-y));
+            display: block;
+            --touch-pan-x: 0px;
+            --touch-pan-y: 0px;
+            --touch-zoom: 1;
+            opacity: 0;
+            transform: scale(var(--touch-zoom));
+            transition: transform 700ms cubic-bezier(.16, 1, .3, 1), filter 700ms cubic-bezier(.16, 1, .3, 1), opacity 360ms ease;
+        }
+
+        .grid-thumb.is-ready {
+            opacity: 1;
+        }
+
+        .grid-item::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border: 0.5px solid rgba(0, 0, 0, 0.65);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .tile-label {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.45);
+            color: #efefef;
+            font-size: 12px;
+            backdrop-filter: blur(8px);
+            transform: translateY(8px);
+            opacity: 0;
+            transition: opacity 500ms ease, transform 500ms ease;
+            z-index: 3;
+        }
+
+        .video-play-prompt {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            backdrop-filter: blur(8px);
+            opacity: 0.95;
+            transition: opacity 220ms ease;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .video-play-prompt::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-38%, -50%);
+            width: 0;
+            height: 0;
+            border-top: 9px solid transparent;
+            border-bottom: 9px solid transparent;
+            border-left: 14px solid #efefef;
+        }
+
+        .grid-item.is-video-playing .video-play-prompt {
+            opacity: 0;
+        }
+
+        .grid-item.is-focused .tile-label {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .grid-wall.is-hovering .grid-item:not(.is-focused) .grid-thumb {
+            filter: brightness(0.75) saturate(0.75);
+        }
+
+        .grid-item.is-focused .grid-thumb {
+            transform: scale(calc(var(--focus-scale, 1.06) * var(--touch-zoom)));
+            filter: saturate(1.25);
+        }
+
+        .grid-item.is-focused {
+            z-index: 20;
+            transform: none;
+            touch-action: none;
+        }
+
+        .grid-item.is-touch-gesturing .grid-thumb {
+            transition: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 14px;
+            }
+
+            .top-row {
+                margin-top: 10px;
+                margin-bottom: 18px;
+                padding: 0 4px;
+            }
+
+            .below-row {
+                padding: 0 4px;
+            }
+
+            .autoplay-toggle-btn {
+                font-size: 12pt;
+            }
+
+            #my-gallery {
+                border-radius: 0;
+                padding: 8px;
+            }
+
+            .grid-wall {
+                min-height: 360px;
+                border-radius: 0;
+            }
+
+            .grid-stack {
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <div class="top-row">
+            <div>
+                <h1 class="title">students as co-creators</h1>
+                <p class="subtitle">Emergency vehicle simulation for collaborative student design, testing, and iteration.</p>
+            </div>
+            <button id="refresh-button" class="refresh-btn" type="button">refresh</button>
+        </div>
+        <div id="status"></div>
+        <div id="my-gallery">
+            <div class="grid-stack" id="grid-stack"></div>
+        </div>
+        <div class="below-row">
+            <button id="autoplay-toggle-button" class="autoplay-toggle-btn" type="button"><span class="autoplay-toggle-label">autoplay videos </span><span id="autoplay-toggle-state" class="autoplay-toggle-state">off</span></button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        const cloudName = window.__APP_CONFIG__?.CLOUDINARY_CLOUD_NAME || "";
+        const defaultFolderName = "students-as-co-creators";
+        const folderName = window.__APP_CONFIG__?.GALLERY_FOLDER_NAME || defaultFolderName;
+        const MAX_TILES_PER_GROUP = 7;
+        const MOBILE_BREAKPOINT_PX = 768;
+        const AUTOPLAY_STORAGE_KEY = "students-as-co-creators.autoplayVideosEnabled";
+        const HERO_SLOT_ID = 0;
+        const NON_HERO_MAX_WIDTH = 2800;
+        let autoplayVideosEnabled = false;
+        const MOBILE_TILE_LAYOUT_VARIANT = {
+            name: "mobile-hero-squares-landscape",
+            cols: 2,
+            rows: 4,
+            slots: [
+                { id: 0, col: 1, row: 1, colSpan: 2, rowSpan: 2, label: "Hero" },
+                { id: 1, col: 1, row: 3, colSpan: 1, rowSpan: 1, label: "Mobile Square Left" },
+                { id: 2, col: 2, row: 3, colSpan: 1, rowSpan: 1, label: "Mobile Square Right" },
+                { id: 3, col: 1, row: 4, colSpan: 2, rowSpan: 1, label: "Mobile Bottom Landscape" }
+            ]
+        };
+        const TILE_LAYOUT_VARIANTS = [
+            {
+                name: "hero-left-right-grid",
+                cols: 4,
+                rows: 6,
+                slots: [
+                    { id: 0, col: 1, row: 1, colSpan: 2, rowSpan: 4, label: "Hero" },
+                    { id: 1, col: 1, row: 5, colSpan: 1, rowSpan: 2, label: "Left Lower 1" },
+                    { id: 2, col: 2, row: 5, colSpan: 1, rowSpan: 2, label: "Left Lower 2" },
+                    { id: 3, col: 3, row: 1, colSpan: 1, rowSpan: 3, label: "Grid RT" },
+                    { id: 4, col: 3, row: 4, colSpan: 1, rowSpan: 3, label: "Grid RB" },
+                    { id: 5, col: 4, row: 1, colSpan: 1, rowSpan: 6, label: "Right Portrait" }
+                ]
+            }
+        ];
+
+        function encodePublicId(publicId) {
+            return publicId
+                .split("/")
+                .map((segment) => encodeURIComponent(segment))
+                .join("/");
+        }
+
+        function cloudinaryAssetUrl(publicId, transform, resourceType = "image") {
+            return `https://res.cloudinary.com/${cloudName}/${resourceType}/upload/${transform}/${encodePublicId(publicId)}`;
+        }
+
+        function cloudinaryImageUrl(publicId, transform) {
+            return cloudinaryAssetUrl(publicId, transform, "image");
+        }
+
+        function cloudinarySrcSet(publicId, widths, options = {}) {
+            const cropMode = options.cropMode || "limit";
+            const aspectRatioToken = options.aspectRatioToken || null;
+            const gravity = options.gravity || null;
+            const resourceType = options.resourceType || "image";
+
+            return widths
+                .map((width) => {
+                    const transforms = ["a_auto", `c_${cropMode}`];
+
+                    if (gravity) {
+                        transforms.push(`g_${gravity}`);
+                    }
+
+                    if (aspectRatioToken) {
+                        transforms.push(`ar_${aspectRatioToken}`);
+                    }
+
+                    transforms.push(`w_${width}`, "dpr_auto", "q_auto:best", "f_auto");
+                    const transform = transforms.join(",");
+                        return `${cloudinaryAssetUrl(publicId, transform, resourceType)} ${width}w`;
+                })
+                .join(", ");
+        }
+
+        function cloudinaryBestSrc(publicId, maxWidth, options = {}) {
+            const cropMode = options.cropMode || "limit";
+            const aspectRatioToken = options.aspectRatioToken || null;
+            const gravity = options.gravity || null;
+                    const resourceType = options.resourceType || "image";
+            const transforms = ["a_auto", `c_${cropMode}`];
+
+            if (gravity) {
+                transforms.push(`g_${gravity}`);
+            }
+
+            if (aspectRatioToken) {
+                transforms.push(`ar_${aspectRatioToken}`);
+            }
+
+            transforms.push(`w_${maxWidth}`, "dpr_auto", "q_auto:best", "f_auto");
+            return cloudinaryAssetUrl(publicId, transforms.join(","), resourceType);
+        }
+
+        function aspectRatioTokenForTile(tile) {
+            return `${tile.colSpan}:${tile.rowSpan}`;
+        }
+
+        function focusScaleForImage(asset, tile) {
+            const imageAspect = asset.width > 0 && asset.height > 0 ? asset.width / asset.height : 1;
+            const tileAspect = tile.colSpan / tile.rowSpan;
+            const mismatch = Math.max(imageAspect / tileAspect, tileAspect / imageAspect);
+
+            if (mismatch >= 1.8) {
+                return "1.0";
+            }
+
+            if (mismatch >= 1.35) {
+                return "1.01";
+            }
+
+            return "1.03";
+        }
+
+        function srcSetWidthsForMax(maxWidth) {
+            const roundedMax = Math.round(maxWidth);
+
+            if (!Number.isFinite(roundedMax) || roundedMax <= 0) {
+                return [960, 1280, 1600, 2000, 2400, 3000, 3600];
+            }
+
+            const baseCandidates = [960, 1280, 1600, 2000, 2400, 3000, 3600, 4200, 5200, 6400];
+            const widths = baseCandidates.filter((width) => width < roundedMax);
+            widths.push(roundedMax);
+
+            return Array.from(new Set(widths)).sort((a, b) => a - b);
+        }
+
+        function isHeroSlot(tile) {
+            return tile.id === HERO_SLOT_ID || /hero/i.test(tile.label || "");
+        }
+
+        function maxWidthForTile(asset, tile) {
+            const sourceWidth = Number.isFinite(asset.width) && asset.width > 0
+                ? Math.round(asset.width)
+                : 3600;
+
+            if (isHeroSlot(tile)) {
+                return sourceWidth;
+            }
+
+            return Math.min(sourceWidth, NON_HERO_MAX_WIDTH);
+        }
+
+        function galleryImageSizes(tile) {
+            if (isHeroSlot(tile)) {
+                return "(max-width: 768px) 96vw, (max-width: 1200px) 62vw, 56vw";
+            }
+
+            return "(max-width: 768px) 46vw, (max-width: 1200px) 28vw, 22vw";
+        }
+
+        function tracksForAxis(hoveredTile, axis, count) {
+            const base = Array(count).fill(1);
+
+            if (!hoveredTile) {
+                return base.map((value) => `${value}fr`).join(" ");
+            }
+
+            const start = axis === "col" ? hoveredTile.col : hoveredTile.row;
+            const span = axis === "col" ? hoveredTile.colSpan : hoveredTile.rowSpan;
+            const active = new Set(Array.from({ length: span }, (_, i) => start + i));
+
+            return base
+                .map((_, i) => {
+                    const line = i + 1;
+                    if (active.has(line)) {
+                        return span > 1 ? "1.75fr" : "2.35fr";
+                    }
+
+                    return "0.72fr";
+                })
+                .join(" ");
+        }
+
+        function tileStyle(tile) {
+            return {
+                gridColumn: `${tile.col} / span ${tile.colSpan}`,
+                gridRow: `${tile.row} / span ${tile.rowSpan}`
+            };
+        }
+
+        function imageAspect(asset) {
+            return asset.width > 0 && asset.height > 0 ? asset.width / asset.height : 1;
+        }
+
+        function slotAspect(slot) {
+            return slot.colSpan / slot.rowSpan;
+        }
+
+        function isGridSlot(slot) {
+            return /^Grid\s/i.test(slot.label || "");
+        }
+
+        function isLeftLowerSlot(slot) {
+            return /^Left Lower\s/i.test(slot.label || "");
+        }
+
+        function isRightPortraitSlot(slot) {
+            return /^Right Portrait\s/i.test(slot.label || "");
+        }
+
+        function isMobileSquareSlot(slot) {
+            return /^Mobile Square\s/i.test(slot.label || "");
+        }
+
+        function isMobileBottomLandscapeSlot(slot) {
+            return /^Mobile Bottom Landscape\s/i.test(slot.label || "");
+        }
+
+        function isMobileViewport() {
+            return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT_PX}px)`).matches;
+        }
+
+        function layoutVariantsForViewport() {
+            if (isMobileViewport()) {
+                return [MOBILE_TILE_LAYOUT_VARIANT];
+            }
+
+            return TILE_LAYOUT_VARIANTS;
+        }
+
+        function fitScore(asset, slot) {
+            const ratio = imageAspect(asset) / slotAspect(slot);
+            let score = Math.abs(Math.log(Math.max(0.0001, ratio)));
+
+            // 1) Penalize portrait images placed into strongly wide slots.
+            const imgAspect = imageAspect(asset);
+            const slotWide = slotAspect(slot);
+            if (imgAspect < 0.95 && slotWide > 1.25) {
+                score += (slotWide - 1.25) * 0.55;
+            }
+
+            // 2) Strong slot-intent bias:
+            // Grid slots prefer square-ish images; Left Lower slots prefer landscape images.
+            const isSquareish = imgAspect >= 0.9 && imgAspect <= 1.1;
+            const isLandscape = imgAspect > 1.08;
+
+            if (isGridSlot(slot)) {
+                if (isSquareish) {
+                    score -= 0.4;
+                } else {
+                    score += 2.2 + Math.min(1.4, Math.abs(Math.log(Math.max(0.0001, imgAspect))) * 0.9);
+                }
+            }
+
+            if (isLeftLowerSlot(slot)) {
+                if (isLandscape) {
+                    score -= 0.35;
+                } else {
+                    score += 2.1 + Math.max(0, 1.08 - imgAspect) * 1.2;
+                }
+            }
+
+            if (isRightPortraitSlot(slot)) {
+                if (imgAspect < 0.82) {
+                    score -= 0.6;
+                } else {
+                    score += 2.8 + Math.max(0, imgAspect - 0.82) * 2.1;
+                }
+            }
+
+            if (isMobileSquareSlot(slot)) {
+                if (isSquareish) {
+                    score -= 0.5;
+                } else {
+                    score += 2.5 + Math.min(1.5, Math.abs(Math.log(Math.max(0.0001, imgAspect))) * 1.1);
+                }
+            }
+
+            if (isMobileBottomLandscapeSlot(slot)) {
+                if (isLandscape) {
+                    score -= 0.55;
+                } else {
+                    score += 2.6 + Math.max(0, 1.08 - imgAspect) * 1.35;
+                }
+            }
+
+            if (isMobileViewport() && isHeroSlot(slot) && Number.isFinite(asset.width) && Number.isFinite(asset.height)) {
+                const pixelCount = Math.max(1, asset.width * asset.height);
+                // Mildly favor larger source media for the mobile hero assignment.
+                score -= Math.log(pixelCount) * 0.02;
+            }
+
+            return score;
+        }
+
+        function selectSlotsForCount(slots, count) {
+            if (count >= slots.length) {
+                return slots.slice();
+            }
+
+            return slots
+                .slice()
+                .sort((left, right) => {
+                    const leftArea = left.colSpan * left.rowSpan;
+                    const rightArea = right.colSpan * right.rowSpan;
+                    if (rightArea !== leftArea) {
+                        return rightArea - leftArea;
+                    }
+                    if (left.row !== right.row) {
+                        return left.row - right.row;
+                    }
+                    return left.col - right.col;
+                })
+                .slice(0, count)
+                .sort((left, right) => left.id - right.id);
+        }
+
+        function bestSlotAssignment(assets, slots) {
+            const remainingAssets = assets.slice();
+            const orderedSlots = slots
+                .slice()
+                .sort((left, right) => {
+                    const leftArea = left.colSpan * left.rowSpan;
+                    const rightArea = right.colSpan * right.rowSpan;
+                    if (rightArea !== leftArea) {
+                        return rightArea - leftArea;
+                    }
+                    return left.id - right.id;
+                });
+
+            const pairs = [];
+            let score = 0;
+
+            orderedSlots.forEach((slot) => {
+                let bestIndex = 0;
+                let bestScore = Number.POSITIVE_INFINITY;
+
+                remainingAssets.forEach((asset, index) => {
+                    const current = fitScore(asset, slot);
+                    if (current < bestScore) {
+                        bestScore = current;
+                        bestIndex = index;
+                    }
+                });
+
+                const [asset] = remainingAssets.splice(bestIndex, 1);
+                pairs.push({ asset, slot });
+                score += bestScore;
+            });
+
+            return { score, pairs };
+        }
+
+        function chooseLayoutForGroup(assets, variants = TILE_LAYOUT_VARIANTS) {
+            const portraitCount = assets.filter((asset) => imageAspect(asset) < 0.95).length;
+            const portraitRatio = assets.length ? portraitCount / assets.length : 0;
+
+            const candidates = variants.map((variant) => {
+                const slots = selectSlotsForCount(variant.slots, assets.length);
+                const assignment = bestSlotAssignment(assets, slots);
+                const portraitFriendlyCount = slots.filter((slot) => slot.rowSpan >= slot.colSpan).length;
+                const portraitFriendlyRatio = slots.length ? portraitFriendlyCount / slots.length : 0;
+
+                // 2) Bias variant choice toward more portrait-friendly layouts when group images skew portrait.
+                const layoutBiasPenalty = Math.max(0, portraitRatio - portraitFriendlyRatio) * assets.length * 1.2;
+
+                return {
+                    name: variant.name,
+                    score: assignment.score + layoutBiasPenalty,
+                    pairs: assignment.pairs
+                };
+            });
+
+            const best = candidates.reduce((winner, candidate) => {
+                if (!winner || candidate.score < winner.score) {
+                    return candidate;
+                }
+                return winner;
+            }, null);
+
+            return {
+                name: best.name,
+                score: best.score,
+                pairs: best.pairs,
+                cols: variants.find((variant) => variant.name === best.name).cols,
+                rows: variants.find((variant) => variant.name === best.name).rows
+            };
+        }
+
+        function chunkAssets(assets, size) {
+            const groups = [];
+            for (let i = 0; i < assets.length; i += size) {
+                groups.push(assets.slice(i, i + size));
+            }
+            return groups;
+        }
+
+        function shuffleAssets(assets) {
+            const shuffled = assets.slice();
+
+            for (let index = shuffled.length - 1; index > 0; index -= 1) {
+                const swapIndex = Math.floor(Math.random() * (index + 1));
+                const temp = shuffled[index];
+                shuffled[index] = shuffled[swapIndex];
+                shuffled[swapIndex] = temp;
+            }
+
+            return shuffled;
+        }
+
+        async function fetchGalleryAssets(folder) {
+            const response = await fetch(`/gallery-assets?folder=${encodeURIComponent(folder)}`);
+
+            if (!response.ok) {
+                throw new Error(`Asset lookup failed with status ${response.status}`);
+            }
+
+            const payload = await response.json();
+            const resources = Array.isArray(payload.resources) ? payload.resources : [];
+            return resources
+                .map((resource) => ({
+                    publicId: resource && resource.public_id,
+                    width: Number(resource && resource.width),
+                    height: Number(resource && resource.height),
+                    resourceType: resource && resource.resource_type,
+                    format: resource && resource.format
+                }))
+                .filter((asset) => typeof asset.publicId === "string" && asset.publicId.length > 0)
+                .slice(0, 36);
+        }
+
+        async function fetchWithFolderFallback(primaryFolder, fallbackFolder) {
+            try {
+                const assets = await fetchGalleryAssets(primaryFolder);
+                if (assets.length) {
+                    return { assets, folderUsed: primaryFolder };
+                }
+            } catch (error) {
+                // If primary lookup fails, we retry with a fallback folder name.
+            }
+
+            const fallbackAssets = await fetchGalleryAssets(fallbackFolder);
+            return { assets: fallbackAssets, folderUsed: fallbackFolder };
+        }
+
+        function displayNameFromPublicId(publicId) {
+            const chunk = publicId.split("/").pop() || publicId;
+            return chunk.replace(/[-_]+/g, " ");
+        }
+
+        function setStatus(message) {
+            const status = document.getElementById("status");
+            status.textContent = message;
+            status.hidden = false;
+        }
+
+        function clearStatus() {
+            const status = document.getElementById("status");
+            status.hidden = true;
+            status.textContent = "";
+        }
+
+        function updateAutoplayToggleLabel() {
+            const autoplayToggleButton = document.getElementById("autoplay-toggle-button");
+            if (!autoplayToggleButton) {
+                return;
+            }
+
+            const autoplayToggleState = document.getElementById("autoplay-toggle-state");
+            if (autoplayToggleState) {
+                autoplayToggleState.textContent = autoplayVideosEnabled ? "on" : "off";
+                return;
+            }
+
+            autoplayToggleButton.textContent = autoplayVideosEnabled
+                ? "autoplay videos on"
+                : "autoplay videos off";
+        }
+
+        function loadAutoplayPreference() {
+            try {
+                const storedValue = localStorage.getItem(AUTOPLAY_STORAGE_KEY);
+                if (storedValue === "1") {
+                    autoplayVideosEnabled = true;
+                    return;
+                }
+
+                if (storedValue === "0") {
+                    autoplayVideosEnabled = false;
+                    return;
+                }
+
+                // First visit default: desktop on, mobile off.
+                autoplayVideosEnabled = !isMobileViewport();
+            } catch (_error) {
+                autoplayVideosEnabled = !isMobileViewport();
+            }
+        }
+
+        function saveAutoplayPreference() {
+            try {
+                localStorage.setItem(AUTOPLAY_STORAGE_KEY, autoplayVideosEnabled ? "1" : "0");
+            } catch (_error) {
+                // Ignore storage failures and keep current in-memory behavior.
+            }
+        }
+
+        function applyAutoplayModeToVisibleVideos() {
+            const videos = document.querySelectorAll(".grid-item video.grid-thumb");
+
+            videos.forEach((video) => {
+                const userPausedByClick = video.dataset.userPausedByClick === "1";
+
+                if (autoplayVideosEnabled) {
+                    if (!userPausedByClick) {
+                        video.play().catch(() => {});
+                    }
+                    return;
+                }
+
+                video.pause();
+            });
+        }
+
+        async function renderGridHoverGallery() {
+            const gridStack = document.getElementById("grid-stack");
+
+            if (!cloudName) {
+                setStatus("Cloudinary cloud name is not configured. Set CLOUDINARY_CLOUD_NAME in your server environment.");
+                return;
+            }
+
+            try {
+                const { assets, folderUsed } = await fetchWithFolderFallback(folderName, defaultFolderName);
+
+                if (!assets.length) {
+                    setStatus(`No assets found in folder: ${folderName}`);
+                    return;
+                }
+
+                clearStatus();
+
+                if (folderUsed !== folderName) {
+                    setStatus(`Using fallback folder: ${folderUsed}`);
+                }
+
+                const randomizedAssets = shuffleAssets(assets);
+                const firstGroup = randomizedAssets.slice(0, MAX_TILES_PER_GROUP);
+                const groups = firstGroup.length ? [firstGroup] : [];
+                gridStack.innerHTML = "";
+                let globalMouseDragButton = null;
+
+                groups.forEach((group, groupIndex) => {
+                    const gridWall = document.createElement("div");
+                    gridWall.className = "grid-wall";
+                    gridWall.setAttribute("role", "group");
+                    gridWall.setAttribute("aria-label", `Gallery group ${groupIndex + 1}`);
+
+                    const layoutChoice = chooseLayoutForGroup(group, layoutVariantsForViewport());
+                    const tiles = layoutChoice.pairs
+                        .map(({ asset, slot }) => {
+                        const mediaType = asset.resourceType === "video" ? "video" : "image";
+                        const maxWidth = maxWidthForTile(asset, slot);
+                        const srcSetWidths = srcSetWidthsForMax(maxWidth);
+                        const fullSrc = cloudinaryBestSrc(asset.publicId, maxWidth, {
+                            cropMode: "limit",
+                            resourceType: mediaType
+                        });
+                        const fullSrcSet = mediaType === "image"
+                            ? cloudinarySrcSet(asset.publicId, srcSetWidths, {
+                                cropMode: "limit",
+                                resourceType: mediaType
+                            })
+                            : "";
+
+                        return {
+                            ...slot,
+                            publicId: asset.publicId,
+                            mediaType,
+                            format: asset.format,
+                            sourceWidth: Number.isFinite(asset.width) ? Math.round(asset.width) : null,
+                            sourceHeight: Number.isFinite(asset.height) ? Math.round(asset.height) : null,
+                            maxWidth,
+                            maxSrc: fullSrc,
+                            srcSetWidths,
+                            restSrc: fullSrc,
+                            restSrcSet: fullSrcSet,
+                            focusSrc: fullSrc,
+                            focusSrcSet: fullSrcSet,
+                            focusScale: focusScaleForImage(asset, slot)
+                        };
+                        })
+                        .sort((left, right) => left.id - right.id);
+
+                    let activeIndex = -1;
+                    const itemButtons = [];
+                    let touchGestureState = null;
+                    let mouseDragState = null;
+
+                    function getTouchTransform(button) {
+                        const image = button.querySelector(".grid-thumb");
+                        if (!image) {
+                            return { zoom: 1, panX: 0, panY: 0 };
+                        }
+
+                        const zoom = Number(image.dataset.touchZoom || "1");
+                        const panX = Number(image.dataset.touchPanX || "0");
+                        const panY = Number(image.dataset.touchPanY || "0");
+
+                        return {
+                            zoom: Number.isFinite(zoom) ? zoom : 1,
+                            panX: Number.isFinite(panX) ? panX : 0,
+                            panY: Number.isFinite(panY) ? panY : 0
+                        };
+                    }
+
+                    function applyTouchTransform(button, transform) {
+                        const image = button.querySelector(".grid-thumb");
+                        if (!image) {
+                            return;
+                        }
+
+                        image.dataset.touchZoom = String(transform.zoom);
+                        image.dataset.touchPanX = String(transform.panX);
+                        image.dataset.touchPanY = String(transform.panY);
+                        image.style.setProperty("--touch-zoom", String(transform.zoom));
+                        image.style.setProperty("--touch-pan-x", `${transform.panX.toFixed(2)}px`);
+                        image.style.setProperty("--touch-pan-y", `${transform.panY.toFixed(2)}px`);
+                    }
+
+                    function resetTouchTransform(button) {
+                        applyTouchTransform(button, { zoom: 1, panX: 0, panY: 0 });
+                        button.classList.remove("is-touch-gesturing");
+                    }
+
+                    function touchDistance(firstTouch, secondTouch) {
+                        return Math.hypot(secondTouch.clientX - firstTouch.clientX, secondTouch.clientY - firstTouch.clientY);
+                    }
+
+                    function touchCenter(firstTouch, secondTouch) {
+                        return {
+                            x: (firstTouch.clientX + secondTouch.clientX) / 2,
+                            y: (firstTouch.clientY + secondTouch.clientY) / 2
+                        };
+                    }
+
+                    function clampPan(button, transform) {
+                        const frameWidth = Math.max(1, button.clientWidth);
+                        const frameHeight = Math.max(1, button.clientHeight);
+                        const focusScale = Number(button.style.getPropertyValue("--focus-scale") || "1.03") || 1.03;
+                        const effectiveScale = Math.max(1, focusScale * transform.zoom);
+                        const imageAspect = Number(button.dataset.imageAspect || "0");
+                        const safeImageAspect = Number.isFinite(imageAspect) && imageAspect > 0
+                            ? imageAspect
+                            : frameWidth / frameHeight;
+                        const tileAspect = frameWidth / frameHeight;
+
+                        let coverWidth = frameWidth;
+                        let coverHeight = frameHeight;
+
+                        if (safeImageAspect > tileAspect) {
+                            coverWidth = frameHeight * safeImageAspect;
+                            coverHeight = frameHeight;
+                        } else {
+                            coverWidth = frameWidth;
+                            coverHeight = frameWidth / safeImageAspect;
+                        }
+
+                        const edgeSafetyPx = 1.5;
+                        const maxPanX = Math.max(0, (coverWidth - frameWidth / effectiveScale) / 2 - edgeSafetyPx / effectiveScale);
+                        const maxPanY = Math.max(0, (coverHeight - frameHeight / effectiveScale) / 2 - edgeSafetyPx / effectiveScale);
+
+                        return {
+                            zoom: transform.zoom,
+                            panX: Math.max(-maxPanX, Math.min(maxPanX, transform.panX)),
+                            panY: Math.max(-maxPanY, Math.min(maxPanY, transform.panY))
+                        };
+                    }
+
+                    function updateGridState() {
+                        const hoveredTile = tiles.find((tile) => tile.id === activeIndex) || null;
+                        gridWall.style.gridTemplateColumns = tracksForAxis(hoveredTile, "col", layoutChoice.cols);
+                        gridWall.style.gridTemplateRows = tracksForAxis(hoveredTile, "row", layoutChoice.rows);
+                        gridWall.classList.toggle("is-hovering", activeIndex !== -1);
+
+                        itemButtons.forEach((button) => {
+                            const id = Number(button.dataset.tileId);
+                            button.classList.toggle("is-focused", id === activeIndex);
+
+                            const tile = tiles.find((entry) => entry.id === id);
+                            const image = button.querySelector(".grid-thumb");
+
+                            if (!tile || !image) {
+                                return;
+                            }
+
+                            if (id === activeIndex) {
+                                const transformState = getTouchTransform(button);
+                                if (tile.mediaType === "image") {
+                                    if (transformState.zoom > 1.001) {
+                                        image.srcset = "";
+                                        image.src = tile.maxSrc;
+                                        image.dataset.forcedMaxRes = "1";
+                                    } else {
+                                        image.srcset = tile.focusSrcSet;
+                                        image.src = tile.focusSrc;
+                                        delete image.dataset.forcedMaxRes;
+                                    }
+                                }
+                                button.style.setProperty("--focus-scale", tile.focusScale);
+                            } else {
+                                if (tile.mediaType === "image") {
+                                    image.srcset = tile.restSrcSet;
+                                    image.src = tile.restSrc;
+                                } else if (autoplayVideosEnabled && image.paused) {
+                                    image.dataset.userPausedByClick = "0";
+                                    image.dataset.touchPauseArmed = "0";
+                                    image.dataset.ignoreNextClick = "0";
+                                    image.play().catch(() => {});
+                                } else if (tile.mediaType === "video") {
+                                    // Clear stale touch-toggle state whenever video tile loses focus.
+                                    image.dataset.touchPauseArmed = "0";
+                                    image.dataset.ignoreNextClick = "0";
+                                }
+                                button.style.removeProperty("--focus-scale");
+                                delete image.dataset.forcedMaxRes;
+                                resetTouchTransform(button);
+                            }
+                        });
+                    }
+
+                    function clearHoverMotion() {
+                        if (mouseDragState && mouseDragState.button) {
+                            mouseDragState.button.classList.remove("is-touch-gesturing");
+                            if (globalMouseDragButton === mouseDragState.button) {
+                                globalMouseDragButton = null;
+                            }
+                        }
+                        activeIndex = -1;
+                        touchGestureState = null;
+                        mouseDragState = null;
+                        updateGridState();
+                    }
+
+                    function beginMouseDrag(button, tileId, event) {
+                        if (event.button !== 0) {
+                            return;
+                        }
+
+                        applyHoverMotion(tileId);
+                        const startTransform = getTouchTransform(button);
+                        mouseDragState = {
+                            tileId,
+                            button,
+                            startX: event.clientX,
+                            startY: event.clientY,
+                            startZoom: startTransform.zoom,
+                            startPanX: startTransform.panX,
+                            startPanY: startTransform.panY
+                        };
+                        globalMouseDragButton = button;
+                        button.classList.add("is-touch-gesturing");
+                        event.preventDefault();
+                    }
+
+                    function handleMouseDragMove(event) {
+                        if (!mouseDragState) {
+                            return;
+                        }
+
+                        const nextPanX = mouseDragState.startPanX + (event.clientX - mouseDragState.startX);
+                        const nextPanY = mouseDragState.startPanY + (event.clientY - mouseDragState.startY);
+                        const clamped = clampPan(mouseDragState.button, {
+                            zoom: mouseDragState.startZoom,
+                            panX: nextPanX,
+                            panY: nextPanY
+                        });
+
+                        applyTouchTransform(mouseDragState.button, clamped);
+                        event.preventDefault();
+                    }
+
+                    function endMouseDrag(event) {
+                        if (!mouseDragState) {
+                            return;
+                        }
+
+                        const draggedButton = mouseDragState.button;
+                        draggedButton.classList.remove("is-touch-gesturing");
+                        if (globalMouseDragButton === draggedButton) {
+                            globalMouseDragButton = null;
+                        }
+                        mouseDragState = null;
+
+                        if (event && !gridWall.matches(":hover")) {
+                            clearHoverMotion();
+                        }
+                    }
+
+                    function handleWheelZoom(button, tileId, event) {
+                        applyHoverMotion(tileId);
+
+                        const tile = tiles.find((entry) => entry.id === tileId);
+                        const image = button.querySelector(".grid-thumb");
+                        const currentTransform = getTouchTransform(button);
+                        const maxWheelZoom = 2;
+                        const zoomFactor = Math.exp(-event.deltaY * 0.0015);
+                        const nextZoom = Math.max(1, Math.min(maxWheelZoom, currentTransform.zoom * zoomFactor));
+
+                        const clamped = clampPan(button, {
+                            zoom: nextZoom,
+                            panX: currentTransform.panX,
+                            panY: currentTransform.panY
+                        });
+
+                        applyTouchTransform(button, clamped);
+
+                        if (tile && image && tile.mediaType === "image") {
+                            if (clamped.zoom > 1.001) {
+                                image.srcset = "";
+                                image.src = tile.maxSrc;
+                                image.dataset.forcedMaxRes = "1";
+                            } else if (image.dataset.forcedMaxRes === "1") {
+                                image.srcset = tile.focusSrcSet;
+                                image.src = tile.focusSrc;
+                                delete image.dataset.forcedMaxRes;
+                            }
+                        }
+
+                        event.preventDefault();
+                    }
+
+                    function applyHoverMotion(focusIndex) {
+                        if (globalMouseDragButton && (!mouseDragState || mouseDragState.button !== globalMouseDragButton)) {
+                            return;
+                        }
+
+                        if (mouseDragState && mouseDragState.tileId !== focusIndex) {
+                            return;
+                        }
+
+                        activeIndex = focusIndex;
+                        updateGridState();
+                    }
+
+                    tiles.forEach((tile) => {
+                        const button = document.createElement("button");
+                        button.type = "button";
+                        button.className = "grid-item";
+                        button.dataset.tileId = String(tile.id);
+                        button.setAttribute("aria-label", tile.label || displayNameFromPublicId(tile.publicId));
+
+                        const style = tileStyle(tile);
+                        button.style.gridColumn = style.gridColumn;
+                        button.style.gridRow = style.gridRow;
+                        if (tile.sourceWidth && tile.sourceHeight) {
+                            button.dataset.imageAspect = String(tile.sourceWidth / tile.sourceHeight);
+                        }
+
+                        const thumb = tile.mediaType === "video"
+                            ? document.createElement("video")
+                            : document.createElement("img");
+                        thumb.className = "grid-thumb";
+                        thumb.draggable = false;
+                        const markThumbReady = () => {
+                            thumb.classList.add("is-ready");
+                        };
+
+                        if (tile.mediaType === "video") {
+                            thumb.muted = true;
+                            thumb.loop = true;
+                            thumb.playsInline = true;
+                            thumb.preload = "metadata";
+                            thumb.src = tile.restSrc;
+                            thumb.dataset.userPausedByClick = "0";
+                            thumb.dataset.touchPauseArmed = "0";
+                            thumb.dataset.ignoreNextClick = "0";
+                            thumb.setAttribute("aria-label", tile.label || displayNameFromPublicId(tile.publicId));
+
+                            const syncVideoPrompt = () => {
+                                button.classList.toggle("is-video-playing", !thumb.paused && !thumb.ended);
+                            };
+
+                            thumb.addEventListener("loadedmetadata", () => {
+                                if (thumb.videoWidth > 0 && thumb.videoHeight > 0) {
+                                    button.dataset.imageAspect = String(thumb.videoWidth / thumb.videoHeight);
+                                }
+                            });
+                            thumb.addEventListener("loadeddata", markThumbReady, { once: true });
+                            thumb.addEventListener("canplay", markThumbReady, { once: true });
+                            thumb.addEventListener("play", syncVideoPrompt);
+                            thumb.addEventListener("pause", syncVideoPrompt);
+                            thumb.addEventListener("ended", syncVideoPrompt);
+                            thumb.addEventListener("touchend", (event) => {
+                                if (!autoplayVideosEnabled) {
+                                    return;
+                                }
+
+                                event.preventDefault();
+
+                                if (!thumb.paused && thumb.dataset.userPausedByClick !== "1") {
+                                    if (thumb.dataset.touchPauseArmed !== "1") {
+                                        thumb.dataset.touchPauseArmed = "1";
+                                    } else {
+                                        thumb.dataset.userPausedByClick = "1";
+                                        thumb.dataset.touchPauseArmed = "0";
+                                        thumb.pause();
+                                    }
+
+                                    thumb.dataset.ignoreNextClick = "1";
+                                    return;
+                                }
+
+                                thumb.dataset.userPausedByClick = "0";
+                                thumb.dataset.touchPauseArmed = "0";
+                                thumb.dataset.ignoreNextClick = "1";
+                                thumb.play().catch(() => {
+                                    button.classList.remove("is-video-playing");
+                                });
+                            }, { passive: false });
+                            thumb.addEventListener("click", (event) => {
+                                if (thumb.dataset.ignoreNextClick === "1") {
+                                    thumb.dataset.ignoreNextClick = "0";
+                                    return;
+                                }
+
+                                event.preventDefault();
+                                event.stopPropagation();
+                                if (thumb.paused) {
+                                    thumb.dataset.userPausedByClick = "0";
+                                    thumb.dataset.touchPauseArmed = "0";
+                                    thumb.play().catch(() => {
+                                        button.classList.remove("is-video-playing");
+                                    });
+                                } else {
+                                    thumb.dataset.userPausedByClick = "1";
+                                    thumb.dataset.touchPauseArmed = "0";
+                                    thumb.pause();
+                                }
+                            });
+                            syncVideoPrompt();
+
+                            if (thumb.readyState >= 2) {
+                                markThumbReady();
+                            }
+
+                            if (autoplayVideosEnabled) {
+                                thumb.play().catch(() => {});
+                            }
+                        } else {
+                            thumb.alt = tile.label || displayNameFromPublicId(tile.publicId);
+                            thumb.loading = "lazy";
+                            thumb.sizes = galleryImageSizes(tile);
+                            if (isHeroSlot(tile)) {
+                                thumb.fetchPriority = "high";
+                            }
+                            thumb.srcset = tile.restSrcSet;
+                            thumb.src = tile.restSrc;
+                            thumb.addEventListener("load", () => {
+                                if (thumb.naturalWidth > 0 && thumb.naturalHeight > 0) {
+                                    button.dataset.imageAspect = String(thumb.naturalWidth / thumb.naturalHeight);
+                                }
+                                markThumbReady();
+                            });
+                            thumb.addEventListener("error", markThumbReady, { once: true });
+                            if (thumb.complete) {
+                                markThumbReady();
+                            }
+                        }
+
+                        const label = document.createElement("div");
+                        label.className = "tile-label";
+                        label.textContent = tile.sourceWidth && tile.sourceHeight
+                            ? `${tile.sourceWidth} x ${tile.sourceHeight}${tile.mediaType === "video" ? " video" : ""}`
+                            : "Unknown size";
+
+                        if (tile.mediaType === "video") {
+                            const playPrompt = document.createElement("div");
+                            playPrompt.className = "video-play-prompt";
+                            playPrompt.setAttribute("aria-hidden", "true");
+                            button.appendChild(playPrompt);
+                        }
+
+                        button.appendChild(thumb);
+                        button.appendChild(label);
+                        button.addEventListener("mouseenter", () => applyHoverMotion(tile.id));
+                        button.addEventListener("focus", () => applyHoverMotion(tile.id));
+                        button.addEventListener("mousedown", (event) => beginMouseDrag(button, tile.id, event));
+                        button.addEventListener("wheel", (event) => handleWheelZoom(button, tile.id, event), { passive: false });
+                        button.addEventListener("dragstart", (event) => event.preventDefault());
+                        button.addEventListener("touchstart", (event) => {
+                            if (event.touches.length === 1) {
+                                applyHoverMotion(tile.id);
+                                return;
+                            }
+
+                            if (event.touches.length === 2) {
+                                applyHoverMotion(tile.id);
+                                const [firstTouch, secondTouch] = event.touches;
+                                const startTransform = getTouchTransform(button);
+                                touchGestureState = {
+                                    tileId: tile.id,
+                                    startDistance: touchDistance(firstTouch, secondTouch),
+                                    startCenter: touchCenter(firstTouch, secondTouch),
+                                    startZoom: startTransform.zoom,
+                                    startPanX: startTransform.panX,
+                                    startPanY: startTransform.panY
+                                };
+                                button.classList.add("is-touch-gesturing");
+                                event.preventDefault();
+                            }
+                        }, { passive: false });
+
+                        button.addEventListener("touchmove", (event) => {
+                            if (!touchGestureState || touchGestureState.tileId !== tile.id || event.touches.length !== 2) {
+                                return;
+                            }
+
+                            const [firstTouch, secondTouch] = event.touches;
+                            const nextDistance = touchDistance(firstTouch, secondTouch);
+                            const nextCenter = touchCenter(firstTouch, secondTouch);
+                            const distanceRatio = touchGestureState.startDistance > 0
+                                ? nextDistance / touchGestureState.startDistance
+                                : 1;
+                            const nextZoom = Math.max(1, Math.min(3, touchGestureState.startZoom * distanceRatio));
+                            const nextPanX = touchGestureState.startPanX + (nextCenter.x - touchGestureState.startCenter.x);
+                            const nextPanY = touchGestureState.startPanY + (nextCenter.y - touchGestureState.startCenter.y);
+                            const clamped = clampPan(button, {
+                                zoom: nextZoom,
+                                panX: nextPanX,
+                                panY: nextPanY
+                            });
+
+                            applyTouchTransform(button, clamped);
+
+                            const image = button.querySelector(".grid-thumb");
+                            if (image && tile.mediaType === "image") {
+                                if (clamped.zoom > 1.001) {
+                                    image.srcset = "";
+                                    image.src = tile.maxSrc;
+                                    image.dataset.forcedMaxRes = "1";
+                                } else if (image.dataset.forcedMaxRes === "1") {
+                                    image.srcset = tile.focusSrcSet;
+                                    image.src = tile.focusSrc;
+                                    delete image.dataset.forcedMaxRes;
+                                }
+                            }
+
+                            event.preventDefault();
+                        }, { passive: false });
+
+                        button.addEventListener("touchend", (event) => {
+                            if (!touchGestureState || touchGestureState.tileId !== tile.id) {
+                                return;
+                            }
+
+                            if (event.touches.length >= 2) {
+                                const [firstTouch, secondTouch] = event.touches;
+                                const currentTransform = getTouchTransform(button);
+                                touchGestureState = {
+                                    tileId: tile.id,
+                                    startDistance: touchDistance(firstTouch, secondTouch),
+                                    startCenter: touchCenter(firstTouch, secondTouch),
+                                    startZoom: currentTransform.zoom,
+                                    startPanX: currentTransform.panX,
+                                    startPanY: currentTransform.panY
+                                };
+                                return;
+                            }
+
+                            button.classList.remove("is-touch-gesturing");
+                            touchGestureState = null;
+                        });
+
+                        button.addEventListener("touchcancel", () => {
+                            button.classList.remove("is-touch-gesturing");
+                            touchGestureState = null;
+                        });
+
+                        itemButtons.push(button);
+                        gridWall.appendChild(button);
+                    });
+
+                    document.addEventListener("mousemove", handleMouseDragMove);
+                    document.addEventListener("mouseup", endMouseDrag);
+                    gridWall.addEventListener("mouseleave", () => {
+                        if (!mouseDragState) {
+                            clearHoverMotion();
+                        }
+                    });
+                    gridWall.addEventListener("focusout", (event) => {
+                        if (!gridWall.contains(event.relatedTarget)) {
+                            clearHoverMotion();
+                        }
+                    });
+
+                    updateGridState();
+                    gridStack.appendChild(gridWall);
+                });
+            } catch (error) {
+                setStatus(`Unable to load gallery assets: ${error.message}`);
+            }
+        }
+
+        const refreshButton = document.getElementById("refresh-button");
+        if (refreshButton) {
+            refreshButton.addEventListener("click", () => window.location.reload());
+        }
+
+        const autoplayToggleButton = document.getElementById("autoplay-toggle-button");
+        if (autoplayToggleButton) {
+            autoplayToggleButton.addEventListener("click", () => {
+                autoplayVideosEnabled = !autoplayVideosEnabled;
+                saveAutoplayPreference();
+                updateAutoplayToggleLabel();
+                applyAutoplayModeToVisibleVideos();
+            });
+        }
+
+        loadAutoplayPreference();
+        updateAutoplayToggleLabel();
+
+        renderGridHoverGallery();
+    </script>
+</body>
+</html>

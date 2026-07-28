@@ -1,0 +1,17 @@
+{
+  "name": "students-as-co-creators-simulation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Students as co-creators emergency vehicle simulation site",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "serve": "^14.2.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

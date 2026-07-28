@@ -398,15 +398,16 @@
         };
         const TILE_LAYOUT_VARIANTS = [
             {
-                name: "landscape-led-grid",
+                name: "hero-left-right-grid",
                 cols: 4,
                 rows: 6,
                 slots: [
-                    { id: 0, col: 1, row: 1, colSpan: 3, rowSpan: 2, label: "Hero" },
-                    { id: 1, col: 4, row: 1, colSpan: 1, rowSpan: 2, label: "Right Top Portrait" },
-                    { id: 2, col: 4, row: 3, colSpan: 1, rowSpan: 2, label: "Right Middle Portrait" },
-                    { id: 3, col: 4, row: 5, colSpan: 1, rowSpan: 2, label: "Right Bottom Portrait" },
-                    { id: 4, col: 1, row: 3, colSpan: 3, rowSpan: 4, label: "Left Lower 1" }
+                    { id: 0, col: 1, row: 1, colSpan: 2, rowSpan: 4, label: "Hero" },
+                    { id: 1, col: 1, row: 5, colSpan: 1, rowSpan: 2, label: "Left Lower 1" },
+                    { id: 2, col: 2, row: 5, colSpan: 1, rowSpan: 2, label: "Left Lower 2" },
+                    { id: 3, col: 3, row: 1, colSpan: 1, rowSpan: 3, label: "Grid RT" },
+                    { id: 4, col: 3, row: 4, colSpan: 1, rowSpan: 3, label: "Grid RB" },
+                    { id: 5, col: 4, row: 1, colSpan: 1, rowSpan: 6, label: "Right Portrait" }
                 ]
             }
         ];
@@ -605,13 +606,8 @@
             // 1) Penalize portrait images placed into strongly wide slots.
             const imgAspect = imageAspect(asset);
             const slotWide = slotAspect(slot);
-            const isVideoAsset = asset.resourceType === "video";
             if (imgAspect < 0.95 && slotWide > 1.25) {
                 score += (slotWide - 1.25) * 0.55;
-            }
-
-            if (isHeroSlot(slot)) {
-                score += isVideoAsset ? -0.3 : 0.15;
             }
 
             // 2) Strong slot-intent bias:

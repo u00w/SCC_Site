@@ -3,7 +3,7 @@ const path = require("path");
 
 const app = express();
 const port = Number(process.env.PORT) || 3000;
-const DEFAULT_GALLERY_FOLDER = process.env.GALLERY_FOLDER_NAME || "students-as-co-creators";
+const DEFAULT_GALLERY_FOLDER = process.env.GALLERY_FOLDER_NAME || "SCC";
 
 const CLOUDINARY_POOL_LIMIT = Number(process.env.CLOUDINARY_POOL_LIMIT) || 1800;
 const CLOUDINARY_PAGE_SIZE = Math.min(500, Number(process.env.CLOUDINARY_PAGE_SIZE) || 500);

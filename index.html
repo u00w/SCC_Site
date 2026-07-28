@@ -1335,11 +1335,11 @@
                             }
                         }
 
-                        const label = document.createElement("div");
-                        label.className = "tile-label";
-                        label.textContent = tile.sourceWidth && tile.sourceHeight
-                            ? `${tile.sourceWidth} x ${tile.sourceHeight}${tile.mediaType === "video" ? " video" : ""}`
-                            : "Unknown size";
+                        // const label = document.createElement("div");
+                        // label.className = "tile-label";
+                        // label.textContent = tile.sourceWidth && tile.sourceHeight
+                        //     ? `${tile.sourceWidth} x ${tile.sourceHeight}${tile.mediaType === "video" ? " video" : ""}`
+                        //     : "Unknown size";
 
                         if (tile.mediaType === "video") {
                             const playPrompt = document.createElement("div");
@@ -1349,7 +1349,7 @@
                         }
 
                         button.appendChild(thumb);
-                        button.appendChild(label);
+                        // button.appendChild(label);
                         button.addEventListener("mouseenter", () => applyHoverMotion(tile.id));
                         button.addEventListener("focus", () => applyHoverMotion(tile.id));
                         button.addEventListener("mousedown", (event) => beginMouseDrag(button, tile.id, event));

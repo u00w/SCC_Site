@@ -58,13 +58,13 @@
 
         .subtitle {
             margin: 10px 0 0;
-            max-width: 62ch;
+            max-width: none;
             color: var(--muted);
             font-size: 14px;
             line-height: 1.45;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
         }
 
         .refresh-btn {
@@ -135,8 +135,8 @@
             object-fit: contain;
             object-position: right bottom;
             /* Colorize dark source artwork to match the theme text color. */
-            filter: brightness(0) saturate(100%) invert(88%) sepia(100%) saturate(1700%) hue-rotate(15deg) brightness(112%) contrast(115%);
-            opacity: 0.98;
+            filter: brightness(0) saturate(100%) invert(83%) sepia(86%) saturate(1250%) hue-rotate(16deg) brightness(102%) contrast(110%);
+            opacity: 0.96;
         }
 
         .autoplay-toggle-btn {

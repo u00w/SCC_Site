@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
     <title>Students as Co-Creators | Emergency Vehicle Simulation</title>
     <meta name="description" content="A student-built emergency vehicle simulation platform for co-creation, exploration, and iteration.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="/config.js" type="text/javascript"></script>
     <style>
         :root {
@@ -17,6 +14,7 @@
             --frame-gap-gradient: radial-gradient(130% 120% at 50% 50%, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.16) 48%, rgba(0, 0, 0, 0.08) 75%, rgba(0, 0, 0, 0) 100%);
             --text: #E4D700;
             --muted: #E4D700;
+            --font-main: "Futura ITC", "Futura", "Futura Md BT", "Century Gothic", sans-serif;
         }
 
         * {
@@ -26,7 +24,7 @@
         body {
             margin: 0;
             padding: 16px;
-            font-family: "Space Grotesk", sans-serif;
+            font-family: var(--font-main);
             color: var(--text);
             background: var(--bg);
         }
@@ -75,7 +73,7 @@
             padding: 0;
             margin: 0;
             color: var(--text);
-            font-family: "Space Grotesk", sans-serif;
+            font-family: var(--font-main);
             font-size: 18px;
             line-height: 1.2;
             letter-spacing: 0.04em;
@@ -93,12 +91,14 @@
         }
 
         #status {
-            margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 12px 14px;
+            margin: 8px 0 0;
+            border: 0;
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
             color: var(--text);
+            font-size: 13px;
+            line-height: 1.35;
         }
 
         #my-gallery {
@@ -109,12 +109,34 @@
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
         }
 
-        .below-row {
+        .site-footer {
             margin-top: 12px;
             padding: 0 6px;
             display: flex;
-            align-items: center;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .footer-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
             justify-content: flex-end;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .footer-mark-image {
+            display: block;
+            max-height: 46px;
+            width: auto;
+            max-width: min(34vw, 280px);
+            object-fit: contain;
+            object-position: right bottom;
+            /* Colorize dark source artwork to match the theme text color. */
+            filter: brightness(0) saturate(100%) invert(88%) sepia(100%) saturate(1700%) hue-rotate(15deg) brightness(112%) contrast(115%);
+            opacity: 0.98;
         }
 
         .autoplay-toggle-btn {
@@ -123,7 +145,7 @@
             padding: 0;
             margin: 0;
             color: var(--text);
-            font-family: "Space Grotesk", sans-serif;
+            font-family: var(--font-main);
             font-size: 18px;
             line-height: 1.2;
             letter-spacing: 0.04em;
@@ -299,8 +321,14 @@
                 padding: 0 4px;
             }
 
-            .below-row {
+            .site-footer {
                 padding: 0 4px;
+                align-items: flex-start;
+            }
+
+            .footer-mark-image {
+                max-height: 34px;
+                max-width: 32vw;
             }
 
             .autoplay-toggle-btn {
@@ -332,12 +360,15 @@
             </div>
             <button id="refresh-button" class="refresh-btn" type="button">refresh</button>
         </div>
-        <div id="status"></div>
         <div id="my-gallery">
             <div class="grid-stack" id="grid-stack"></div>
         </div>
-        <div class="below-row">
-            <button id="autoplay-toggle-button" class="autoplay-toggle-btn" type="button"><span class="autoplay-toggle-label">autoplay videos </span><span id="autoplay-toggle-state" class="autoplay-toggle-state">off</span></button>
+        <div class="site-footer">
+            <div class="footer-left">
+                <button id="autoplay-toggle-button" class="autoplay-toggle-btn" type="button"><span class="autoplay-toggle-label">autoplay videos </span><span id="autoplay-toggle-state" class="autoplay-toggle-state">off</span></button>
+                <div id="status" hidden></div>
+            </div>
+            <img class="footer-mark-image" src="/UOW_Logo_Trans.png" alt="UOW logo" onerror="this.style.display='none'">
         </div>
     </div>
     <script type="text/javascript">

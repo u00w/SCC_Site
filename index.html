@@ -58,13 +58,16 @@
 
         .subtitle {
             margin: 10px 0 0;
-            max-width: none;
+            max-width: 100%;
             color: var(--muted);
+            font-family: var(--font-main);
             font-size: 16px;
             line-height: 1.42;
             white-space: normal;
             overflow: visible;
             text-overflow: clip;
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
         }
 
         .refresh-btn {
@@ -184,8 +187,17 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             background: var(--bg);
+        }
+
+        .content-section p {
+            margin: 0;
+            color: var(--text);
+            font-family: var(--font-main);
+            font-size: 16px;
+            line-height: 1.5;
+            text-indent: 1.5em;
         }
 
         .content-section__heading {
@@ -430,6 +442,7 @@
         </div>
         <section class="content-section" aria-label="Executive Summary">
             <h2 class="content-section__heading">Executive Summary:</h2>
+            <p>Students from the Computer Games Development BSc worked with a Senior Lecturer and Director of the Immersive development Lab to create a software driving simulation with advanced physical control and virtual reality interaction and display options. This project expanded on work they had done in the 3D Interactive Media Development and XR Multimodal Interaction modules and serves as an important template for synthesizing concepts learned in modules to create a complete template project.</p>
         </section>
         <div id="my-gallery">
             <div class="grid-stack" id="grid-stack"></div>

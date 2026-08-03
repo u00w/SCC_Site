@@ -182,7 +182,7 @@
             padding: 0 0 24px;
             display: flex;
             flex-direction: column;
-            align-items: stretch;
+            align-items: flex-start;
             justify-content: center;
             gap: 12px;
         }
@@ -193,13 +193,13 @@
             font-size: clamp(20px, 2.1vw, 28px);
             font-weight: 400;
             letter-spacing: 0.02em;
-            text-align: center;
+            text-align: left;
         }
 
         .repo-section__frame-wrapper {
             width: 100%;
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
         }
 
         .repo-section__frame {
@@ -441,10 +441,10 @@
 
                 const bodyHeight = frameDoc.body?.scrollHeight || 0;
                 const htmlHeight = frameDoc.documentElement?.scrollHeight || 0;
-                const nextHeight = Math.max(bodyHeight, htmlHeight, 1400);
+                const nextHeight = Math.max(bodyHeight, htmlHeight, 1040);
                 frame.style.height = `${nextHeight}px`;
             } catch (error) {
-                frame.style.height = '1600px';
+                frame.style.height = '1100px';
             }
         }
 
@@ -461,7 +461,7 @@
 
             window.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'repo-card-size' && typeof event.data.height === 'number') {
-                    frame.style.height = `${Math.max(event.data.height, 1400)}px`;
+                    frame.style.height = `${Math.max(event.data.height, 1040)}px`;
                 }
             });
 

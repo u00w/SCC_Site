@@ -3073,7 +3073,7 @@
 
     function notifyParentHeight() {
       if (window.parent && window.parent !== window) {
-        const nextHeight = Math.max(document.body?.scrollHeight || 0, document.documentElement?.scrollHeight || 0, 1400);
+        const nextHeight = Math.max(document.body?.scrollHeight || 0, document.documentElement?.scrollHeight || 0, 1040);
         window.parent.postMessage({ type: 'repo-card-size', height: nextHeight }, '*');
       }
     }

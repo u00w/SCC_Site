@@ -2515,6 +2515,18 @@
       { name: 'World & roads', match: /road|world|map|terrain|vehicle|traffic|path|location/i },
       { name: 'Data & support', match: /model|data|config|repository|save|event|player/i },
     ];
+    const DIAGRAM_THEME = {
+      background: '#020617',
+      labelText: '#E4D700',
+      labelBorder: '#E4D700',
+      labelBackground: '#6A1A41',
+      headerText: '#E4D700',
+      nodeBorder: '#E4D700',
+      nodeFill: '#6A1A41',
+      nodeText: '#FDE68A',
+      connector: '#E4D700',
+      connectorShadow: '#020617',
+    };
     const GROUP_X_POSITIONS = [0.08, 0.36, 0.64, 0.92];
 
     const getGroupIndex = (umlClass) => {
@@ -2808,15 +2820,15 @@
       }, [canvasHeight, classes, positions, relationships]);
 
       return (
-        <div className="border border-slate-700/70 bg-slate-950/70 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-800 text-[10px] text-slate-400">
-            <span className="inline-block w-2 h-2 bg-yellow-400" />
+        <div className="border border-slate-700/70 overflow-hidden" style={{ backgroundColor: DIAGRAM_THEME.background }}>
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-800 text-[10px]" style={{ color: DIAGRAM_THEME.headerText }}>
+            <span className="inline-block w-2 h-2" style={{ backgroundColor: DIAGRAM_THEME.labelText }} />
             <span>Hybrid React renderer. Branch: {defaultBranch}. Connectors and lanes match the in-app architecture logic.</span>
           </div>
 
-          <div ref={frameRef} className="w-full overflow-hidden" style={{ height: canvasHeight * diagramScale }}>
+          <div ref={frameRef} className="w-full overflow-hidden" style={{ height: canvasHeight * diagramScale, backgroundColor: DIAGRAM_THEME.background }}>
             <div className="relative w-[1280px]" style={{ height: canvasHeight, transform: 'scale(' + diagramScale + ')', transformOrigin: 'top left' }}>
-              <div className="absolute inset-x-0 top-2 grid grid-cols-4 px-4 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-600">
+              <div className="absolute inset-x-0 top-2 grid grid-cols-4 px-4 text-center text-[10px] font-semibold uppercase tracking-wider" style={{ color: DIAGRAM_THEME.headerText }}>
                 {GROUPS.map((group) => <span key={group.name}>{group.name}</span>)}
               </div>
 
@@ -2828,7 +2840,7 @@
                 </defs>
                 {connections.map((connection) => (
                   <g key={connection.id}>
-                    <path d={connection.path} fill="none" stroke="#020617" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d={connection.path} fill="none" stroke={DIAGRAM_THEME.connectorShadow} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
                     <path d={connection.path} fill="none" stroke={connection.color} strokeWidth="1.5" strokeDasharray={connection.dashed ? '5 4' : undefined}
                       strokeLinecap="round" strokeLinejoin="round" opacity="0.8" markerEnd="url(#architecture-arrow)" />
                     <rect
@@ -2840,7 +2852,7 @@
                       fill={connection.labelBackground}
                       stroke={connection.labelBorder}
                     />
-                    <text x={connection.labelX} y={connection.labelY} textAnchor="middle" dominantBaseline="middle" className="fill-slate-100 text-[9px]">
+                    <text x={connection.labelX} y={connection.labelY} textAnchor="middle" dominantBaseline="middle" className="text-[9px]" style={{ fill: DIAGRAM_THEME.labelText }}>
                       {connection.label}
                     </text>
                   </g>
@@ -2857,16 +2869,16 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     title={'Find ' + umlClass.name + ' in this repository on GitHub'}
-                    className="absolute z-10 w-52 -translate-x-1/2 -translate-y-1/2 border border-yellow-400/30 bg-slate-900/95 shadow-md shadow-black/20 transition hover:z-20 hover:border-yellow-400/70 hover:bg-slate-800"
-                    style={{ left: (position.x * 100) + '%', top: position.y + 'px' }}
+                    className="absolute z-10 w-52 -translate-x-1/2 -translate-y-1/2 border shadow-md shadow-black/20 transition hover:z-20"
+                    style={{ left: (position.x * 100) + '%', top: position.y + 'px', borderColor: DIAGRAM_THEME.nodeBorder, backgroundColor: DIAGRAM_THEME.nodeFill, color: DIAGRAM_THEME.nodeText }}
                   >
-                    <p className="px-2.5 pt-2 text-[9px] uppercase tracking-wider text-yellow-300">«{umlClass.stereotype || 'class'}»</p>
-                    <div className="mt-1 flex items-center gap-1.5 border-y border-slate-700/80 px-2.5 py-1.5">
-                      <span className="truncate text-xs font-bold text-yellow-100">{umlClass.name}</span>
-                      <span className="text-slate-500 text-[10px]">↗</span>
+                    <p className="px-2.5 pt-2 text-[9px] uppercase tracking-wider" style={{ color: DIAGRAM_THEME.labelText }}>«{umlClass.stereotype || 'class'}»</p>
+                    <div className="mt-1 flex items-center gap-1.5 border-y px-2.5 py-1.5" style={{ borderColor: DIAGRAM_THEME.nodeBorder }}>
+                      <span className="truncate text-xs font-bold" style={{ color: DIAGRAM_THEME.nodeText }}>{umlClass.name}</span>
+                      <span className="text-[10px]" style={{ color: DIAGRAM_THEME.labelText }}>↗</span>
                     </div>
                     {members.length > 0 && (
-                      <div className="space-y-0.5 px-2.5 py-2 font-mono text-[9px] leading-[1.35] text-slate-300">
+                      <div className="space-y-0.5 px-2.5 py-2 font-mono text-[9px] leading-[1.35]" style={{ color: DIAGRAM_THEME.nodeText }}>
                         {members.map((line, idx) => <p key={idx} className="break-words">{line}</p>)}
                       </div>
                     )}

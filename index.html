@@ -176,6 +176,41 @@
             background: transparent;
         }
 
+        .repo-section {
+            width: 100%;
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .repo-section__heading {
+            margin: 0;
+            color: var(--text);
+            font-size: clamp(20px, 2.1vw, 28px);
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            text-align: center;
+        }
+
+        .repo-section__frame-wrapper {
+            width: min(100%, 1040px);
+            display: flex;
+            justify-content: center;
+        }
+
+        .repo-section__frame {
+            width: min(100%, 980px);
+            min-height: 920px;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #020617;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+        }
+
         .grid-wall {
             display: grid;
             height: min(64vh, 760px);
@@ -375,13 +410,16 @@
             <img class="footer-mark-image" src="/UOW_Logo_Trans.png" alt="UOW logo" onerror="this.style.display='none'">
         </div>
     </div>
-    <iframe
-      src="https://u00w.github.io/Github-repository-showcase-main-mermaid/"
-      width="80%"
-      height="600"
-      style="border: none; border-radius: 12px; overflow: hidden;"
-      title="AdamKovacs360/CoCreatorSimulationGame GitHub Showcase"
-    ></iframe>
+    <section class="repo-section" aria-label="SCC GitHub repository showcase">
+        <h2 class="repo-section__heading">SCC Github Repository:</h2>
+        <div class="repo-section__frame-wrapper">
+            <iframe
+                class="repo-section__frame"
+                src="/html_css_js_export-03.html"
+                title="SCC GitHub Repository"
+            ></iframe>
+        </div>
+    </section>
     <script type="text/javascript">
         const cloudName = window.__APP_CONFIG__?.CLOUDINARY_CLOUD_NAME || "";
         const defaultFolderName = "SCC";

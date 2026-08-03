@@ -1,0 +1,314 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AdamKovacs360/CoCreatorSimulationGame — Repository Card</title>
+  <style>
+/* ── Reset ────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #020617;
+  padding: 32px 16px;
+}
+
+/* GitHub Repository Showcase Card */
+/* Drop this file alongside repo-card.html and repo-card.js */
+
+.repo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  max-width: 960px;
+  border-radius: 16px;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.repo-card:hover { border-color: rgba(99, 102, 241, 0.5); box-shadow: 0 6px 32px rgba(99, 102, 241, 0.15); }
+.repo-card__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.repo-card__owner-group { display: flex; align-items: center; gap: 12px; }
+.repo-card__avatar { width: 40px; height: 40px; border-radius: 10px; border: 1px solid #334155; flex-shrink: 0; }
+.repo-card__meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.repo-card__name { font-weight: 700; font-size: 14px; color: #f1f5f9; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.repo-card__owner { font-size: 11px; color: #94a3b8; }
+.repo-card__btn { flex-shrink: 0; padding: 6px 12px; background: #4f46e5; color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600; text-decoration: none; transition: background 0.15s ease; }
+.repo-card__btn:hover { background: #6366f1; }
+.repo-card__description { margin: 0; font-size: 12px; line-height: 1.6; color: #cbd5e1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.repo-card__stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.repo-card__stat { border: 1px solid #1e293b; background: rgba(2, 6, 23, 0.7); border-radius: 10px; padding: 8px 10px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 11px; color: #94a3b8; }
+.repo-card__section { border: 1px solid #1e293b; border-radius: 12px; background: rgba(2, 6, 23, 0.7); padding: 14px; }
+.repo-card__section-title { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: #f8fafc; }
+.repo-card__diagram-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.repo-card__tab-btn { border: 1px solid #334155; background: #0b1220; color: #94a3b8; border-radius: 8px; font-size: 11px; font-weight: 600; padding: 6px 10px; cursor: pointer; }
+.repo-card__tab-btn.is-active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.repo-card__diagram-pane { border: 1px solid #1e293b; background: #020617; border-radius: 10px; padding: 10px; }
+.repo-card__diagram-pane.is-hidden { display: none; }
+.repo-card__diagram-mermaid { overflow-x: auto; background: #fff; color: #0f172a; border-radius: 8px; padding: 8px; }
+.repo-card__diagram-error { margin: 0 0 8px; color: #fecdd3; font-size: 11px; }
+.repo-card__codeblock { margin: 0; overflow-x: auto; white-space: pre; font-size: 11px; color: #e2e8f0; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+.repo-card__codeblock--plantuml { color: #a7f3d0; }
+.repo-card__class-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.repo-card__class-item { border: 1px solid #1e293b; border-radius: 8px; background: #0b1220; padding: 8px; }
+.repo-card__class-name { margin: 0; color: #f1f5f9; font-weight: 700; font-size: 12px; }
+.repo-card__class-meta { margin: 4px 0 0; color: #94a3b8; font-size: 11px; }
+.repo-card__language-list { display: flex; flex-direction: column; gap: 8px; }
+.repo-card__language-row { display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 4px; }
+.repo-card__bar { height: 8px; border-radius: 999px; background: #1e293b; overflow: hidden; }
+.repo-card__bar-fill { height: 100%; background: #6366f1; }
+.repo-card__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.repo-card__tag { border: 1px solid #334155; background: #0b1220; border-radius: 8px; padding: 4px 8px; font-size: 11px; color: #cbd5e1; }
+.repo-card__tree { margin: 0; white-space: pre; overflow-x: auto; font-size: 11px; line-height: 1.5; color: #cbd5e1; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+.repo-card__placeholder { margin: 0; color: #cbd5e1; font-size: 12px; }
+@media (max-width: 720px) {
+  .repo-card__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .repo-card__class-grid { grid-template-columns: 1fr; }
+}
+.repo-card--light { background: #ffffff; border-color: #e2e8f0; color: #1e293b; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); }
+.repo-card--light .repo-card__section,
+.repo-card--light .repo-card__stat,
+.repo-card--light .repo-card__class-item,
+.repo-card--light .repo-card__tab-btn,
+.repo-card--light .repo-card__tag,
+.repo-card--light .repo-card__diagram-pane { background: #f8fafc; border-color: #cbd5e1; color: #334155; }
+.repo-card--light .repo-card__section-title,
+.repo-card--light .repo-card__name,
+.repo-card--light .repo-card__class-name { color: #0f172a; }
+.repo-card--light .repo-card__owner,
+.repo-card--light .repo-card__class-meta,
+.repo-card--light .repo-card__language-row { color: #64748b; }
+.repo-card--light .repo-card__diagram-mermaid { border: 1px solid #cbd5e1; }
+.repo-card--light .repo-card__codeblock { color: #1e293b; }
+.repo-card--light .repo-card__codeblock--plantuml { color: #166534; }
+.repo-card--light .repo-card__tree { color: #334155; }
+.repo-card--light .repo-card__tab-btn.is-active { color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!--
+    GitHub Repository Card — Self-contained embed
+    ─────────────────────────────────────────────
+    • Copy this entire file and open it in any browser, or paste the
+      <div> and the <style>/<script> blocks into your own page.
+    • To display a different repo, change data-repo below.
+    • Live data is fetched from the GitHub API automatically.
+  -->
+  <div id="repo-card" data-repo="AdamKovacs360/CoCreatorSimulationGame"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+/**
+ * GitHub Repository Showcase Card — Vanilla JS
+ * Requires repo-card.css and optionally mermaid.min.js for Mermaid rendering.
+ */
+
+(function () {
+  'use strict';
+
+  var REPO_DATA = JSON.parse('{"repo":{"name":"CoCreatorSimulationGame","fullName":"AdamKovacs360/CoCreatorSimulationGame","owner":"AdamKovacs360","ownerAvatarUrl":"https://avatars.githubusercontent.com/u/66362960?v=4","htmlUrl":"https://github.com/AdamKovacs360/CoCreatorSimulationGame","description":"This is a repo for a vr simulation game created for a co creative program in 2026 Unity","stars":0,"forks":0,"openIssues":0,"primaryLanguage":"C#","license":"Open Source","defaultBranch":"main","topics":[]},"languages":[{"name":"C#","bytes":679410},{"name":"ShaderLab","bytes":132263},{"name":"Wolfram Language","bytes":28207},{"name":"HLSL","bytes":22889}],"diagrams":{"mermaidCode":"classDiagram\\n  class CrashDetection {\\n    <<component>> \\n    #transform: Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class GPSManager {\\n    <<service>> \\n    +$Instance: GPSManager\\n    -isInitialized: bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n  class Hospital {\\n    <<component>> \\n    #transform: Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class MainMenuButtons {\\n    <<controller>> \\n    -isActive: bool\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class MissionDestination {\\n    <<component>> \\n    #transform: Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class NavigationManager {\\n    <<service>> \\n    +$Instance: NavigationManager\\n    -isInitialized: bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n  class PausedMenu {\\n    <<controller>> \\n    -isActive: bool\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class RoadGraphBuilder {\\n    <<service>> \\n    +$Instance: RoadGraphBuilder\\n    -isInitialized: bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n  class RoadGraphNode {\\n    <<model>> \\n    +id: int\\n  }\\n  class RoadSpline {\\n    <<component>> \\n    #transform: Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class RouteDrawer {\\n    <<component>> \\n    #transform: Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class StartMenu {\\n    <<controller>> \\n    -isActive: bool\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class UIManager {\\n    <<service>> \\n    +$Instance: UIManager\\n    -isInitialized: bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n  class HandSubsystemManager {\\n    <<service>> \\n    +$Instance: HandSubsystemManager\\n    -isInitialized: bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n  GPSManager ..> NavigationManager : uses\\n  NavigationManager ..> UIManager : uses\\n  UIManager ..> RoadGraphBuilder : uses\\n  RoadGraphBuilder ..> HandSubsystemManager : uses\\n  GPSManager \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\n  NavigationManager \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\n  UIManager \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\n  RoadGraphBuilder \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\n  HandSubsystemManager \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\n  MainMenuButtons --> GPSManager : controls\\n  MainMenuButtons ..> NavigationManager : uses\\n  PausedMenu --> NavigationManager : controls\\n  PausedMenu ..> UIManager : uses\\n  StartMenu --> UIManager : controls\\n  StartMenu ..> RoadGraphBuilder : uses\\n  CrashDetection --> GPSManager : collaborates\\n  CrashDetection --> RoadGraphNode : reads\\n  Hospital ..> NavigationManager : uses\\n  Hospital --> RoadGraphNode : reads\\n  MissionDestination ..> UIManager : uses\\n  MissionDestination --> RoadGraphNode : reads\\n  RoadSpline ..> RoadGraphBuilder : uses\\n  RoadSpline --> RoadGraphNode : reads\\n  RouteDrawer ..> HandSubsystemManager : uses\\n  RouteDrawer --> RoadGraphNode : reads\\n  GPSManager --> Hospital : collaborates\\n","plantUmlCode":"@startuml\\n!theme plain\\nskinparam classAttributeIconSize 0\\n\\npackage \\"Assets/Scripts\\" {\\n  class CrashDetection {\\n    #transform : Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class GPSManager {\\n    {static} +Instance : GPSManager\\n    -isInitialized : bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n  class Hospital {\\n    #transform : Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class MainMenuButtons {\\n    -isActive : bool\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class MissionDestination {\\n    #transform : Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class NavigationManager {\\n    {static} +Instance : NavigationManager\\n    -isInitialized : bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n  class PausedMenu {\\n    -isActive : bool\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class RoadGraphBuilder {\\n    {static} +Instance : RoadGraphBuilder\\n    -isInitialized : bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n  class RoadGraphNode {\\n    +id : int\\n  }\\n  class RoadSpline {\\n    #transform : Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class RouteDrawer {\\n    #transform : Transform\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class StartMenu {\\n    -isActive : bool\\n    -Start() : void\\n    -Update() : void\\n  }\\n  class UIManager {\\n    {static} +Instance : UIManager\\n    -isInitialized : bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n}\\n\\npackage \\"Assets/VRTemplateAssets/Scripts\\" {\\n  class HandSubsystemManager {\\n    {static} +Instance : HandSubsystemManager\\n    -isInitialized : bool\\n    -Awake() : void\\n    +Initialize() : void\\n  }\\n}\\n\\nGPSManager ..> NavigationManager : uses\\nNavigationManager ..> UIManager : uses\\nUIManager ..> RoadGraphBuilder : uses\\nRoadGraphBuilder ..> HandSubsystemManager : uses\\nGPSManager \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\nNavigationManager \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\nUIManager \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\nRoadGraphBuilder \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\nHandSubsystemManager \\"1\\" *-- \\"0..*\\" RoadGraphNode : manages\\nMainMenuButtons --> GPSManager : controls\\nMainMenuButtons ..> NavigationManager : uses\\nPausedMenu --> NavigationManager : controls\\nPausedMenu ..> UIManager : uses\\nStartMenu --> UIManager : controls\\nStartMenu ..> RoadGraphBuilder : uses\\nCrashDetection --> GPSManager : collaborates\\nCrashDetection --> RoadGraphNode : reads\\nHospital ..> NavigationManager : uses\\nHospital --> RoadGraphNode : reads\\nMissionDestination ..> UIManager : uses\\nMissionDestination --> RoadGraphNode : reads\\nRoadSpline ..> RoadGraphBuilder : uses\\nRoadSpline --> RoadGraphNode : reads\\nRouteDrawer ..> HandSubsystemManager : uses\\nRouteDrawer --> RoadGraphNode : reads\\nGPSManager --> Hospital : collaborates\\n@enduml","classes":[{"id":"c1","name":"GPSManager","stereotype":"service","packageName":"Assets/Scripts","attributes":["+Instance: GPSManager","-isInitialized: bool"],"methods":["-Awake(): void","+Initialize(): void"]},{"id":"c2","name":"NavigationManager","stereotype":"service","packageName":"Assets/Scripts","attributes":["+Instance: NavigationManager","-isInitialized: bool"],"methods":["-Awake(): void","+Initialize(): void"]},{"id":"c3","name":"UIManager","stereotype":"service","packageName":"Assets/Scripts","attributes":["+Instance: UIManager","-isInitialized: bool"],"methods":["-Awake(): void","+Initialize(): void"]},{"id":"c4","name":"CrashDetection","stereotype":"component","packageName":"Assets/Scripts","attributes":["#transform: Transform"],"methods":["-Start(): void","-Update(): void"]},{"id":"c5","name":"Hospital","stereotype":"component","packageName":"Assets/Scripts","attributes":["#transform: Transform"],"methods":["-Start(): void","-Update(): void"]},{"id":"c6","name":"MainMenuButtons","stereotype":"controller","packageName":"Assets/Scripts","attributes":["-isActive: bool"],"methods":["-Start(): void","-Update(): void"]},{"id":"c7","name":"MissionDestination","stereotype":"component","packageName":"Assets/Scripts","attributes":["#transform: Transform"],"methods":["-Start(): void","-Update(): void"]},{"id":"c8","name":"PausedMenu","stereotype":"controller","packageName":"Assets/Scripts","attributes":["-isActive: bool"],"methods":["-Start(): void","-Update(): void"]},{"id":"c9","name":"RoadGraphBuilder","stereotype":"service","packageName":"Assets/Scripts","attributes":["+Instance: RoadGraphBuilder","-isInitialized: bool"],"methods":["-Awake(): void","+Initialize(): void"]},{"id":"c10","name":"RoadGraphNode","stereotype":"model","packageName":"Assets/Scripts","attributes":["+id: int"],"methods":[]},{"id":"c11","name":"RoadSpline","stereotype":"component","packageName":"Assets/Scripts","attributes":["#transform: Transform"],"methods":["-Start(): void","-Update(): void"]},{"id":"c12","name":"RouteDrawer","stereotype":"component","packageName":"Assets/Scripts","attributes":["#transform: Transform"],"methods":["-Start(): void","-Update(): void"]},{"id":"c13","name":"StartMenu","stereotype":"controller","packageName":"Assets/Scripts","attributes":["-isActive: bool"],"methods":["-Start(): void","-Update(): void"]},{"id":"c14","name":"HandSubsystemManager","stereotype":"service","packageName":"Assets/VRTemplateAssets/Scripts","attributes":["+Instance: HandSubsystemManager","-isInitialized: bool"],"methods":["-Awake(): void","+Initialize(): void"]}],"relationships":[{"fromId":"c1","toId":"c2","type":"dependency","label":"uses"},{"fromId":"c2","toId":"c3","type":"dependency","label":"uses"},{"fromId":"c3","toId":"c9","type":"dependency","label":"uses"},{"fromId":"c9","toId":"c14","type":"dependency","label":"uses"},{"fromId":"c1","toId":"c10","type":"composition","label":"manages"},{"fromId":"c2","toId":"c10","type":"composition","label":"manages"},{"fromId":"c3","toId":"c10","type":"composition","label":"manages"},{"fromId":"c9","toId":"c10","type":"composition","label":"manages"},{"fromId":"c14","toId":"c10","type":"composition","label":"manages"},{"fromId":"c6","toId":"c1","type":"association","label":"controls"},{"fromId":"c6","toId":"c2","type":"dependency","label":"uses"},{"fromId":"c8","toId":"c2","type":"association","label":"controls"},{"fromId":"c8","toId":"c3","type":"dependency","label":"uses"},{"fromId":"c13","toId":"c3","type":"association","label":"controls"},{"fromId":"c13","toId":"c9","type":"dependency","label":"uses"},{"fromId":"c4","toId":"c1","type":"association","label":"collaborates"},{"fromId":"c4","toId":"c10","type":"association","label":"reads"},{"fromId":"c5","toId":"c2","type":"dependency","label":"uses"},{"fromId":"c5","toId":"c10","type":"association","label":"reads"},{"fromId":"c7","toId":"c3","type":"dependency","label":"uses"},{"fromId":"c7","toId":"c10","type":"association","label":"reads"},{"fromId":"c11","toId":"c9","type":"dependency","label":"uses"},{"fromId":"c11","toId":"c10","type":"association","label":"reads"},{"fromId":"c12","toId":"c14","type":"dependency","label":"uses"},{"fromId":"c12","toId":"c10","type":"association","label":"reads"},{"fromId":"c1","toId":"c5","type":"association","label":"collaborates"}]},"treePaths":["Assets/ALP_Assets.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground001.mat","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground001.mat.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground002.mat","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground002.mat.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground003.mat","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground003.mat.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground004.mat","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground004.mat.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground005.mat","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground005.mat.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground006.mat","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Ground006.mat.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Sky.mat","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Sky.mat.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Terrain_Old.mat","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Terrain_Old.mat.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Terrain_Standart.mat","Assets/ALP_Assets/Realistic Terrain Textures Lite/Materials/Terrain_Standart.mat.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Textures.meta","Assets/ALP_Assets/Realistic Terrain Textures Lite/Textures/Ground002.tif","Assets/ALP_Assets/Realistic Terrain Textures Lite/Textures/Ground002.tif.meta"]}');
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtNum(n) {
+    return Number(n).toLocaleString();
+  }
+
+  function pct(part, total) {
+    if (!total) return 0;
+    return Math.round((part / total) * 100);
+  }
+
+  function renderLanguageRows(languages) {
+    var total = (languages || []).reduce(function (sum, item) { return sum + (item.bytes || 0); }, 0);
+    return (languages || []).map(function (item) {
+      var value = pct(item.bytes || 0, total);
+      return '<div>' +
+        '<div class="repo-card__language-row"><span>' + esc(item.name) + '</span><span>' + value + '%</span></div>' +
+        '<div class="repo-card__bar"><div class="repo-card__bar-fill" style="width:' + value + '%"></div></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderClassRows(classes) {
+    return (classes || []).slice(0, 10).map(function (item) {
+      return '<div class="repo-card__class-item">' +
+        '<p class="repo-card__class-name">' + esc(item.name) + '</p>' +
+        '<p class="repo-card__class-meta">' + esc(item.stereotype || 'class') + ' · ' + esc(item.packageName || 'root') + '</p>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderTree(paths) {
+    return (paths || []).map(function (path) { return '• ' + path; }).join('\n');
+  }
+
+  function bindDiagramUi(el, data) {
+    var buttons = el.querySelectorAll('[data-diagram-tab]');
+    var panes = el.querySelectorAll('[data-diagram-pane]');
+    function setActive(tab) {
+      buttons.forEach(function (btn) {
+        var on = btn.getAttribute('data-diagram-tab') === tab;
+        btn.classList.toggle('is-active', on);
+      });
+      panes.forEach(function (pane) {
+        var on = pane.getAttribute('data-diagram-pane') === tab;
+        pane.classList.toggle('is-hidden', !on);
+      });
+      if (tab === 'mermaid') renderMermaid(el, data.diagrams.mermaidCode || '');
+    }
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () { setActive(btn.getAttribute('data-diagram-tab')); });
+    });
+    setActive('mermaid');
+  }
+
+  function renderMermaid(el, code) {
+    var container = el.querySelector('[data-mermaid-container]');
+    var error = el.querySelector('[data-mermaid-error]');
+    if (!container) return;
+    if (error) error.textContent = '';
+    if (!window.mermaid) {
+      container.innerHTML = '<p class="repo-card__placeholder">Mermaid not loaded. Include mermaid.min.js to enable rendering.</p>';
+      return;
+    }
+    try {
+      window.mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'neutral' });
+      var renderId = 'repo-card-mermaid-' + Math.random().toString(36).slice(2);
+      window.mermaid.render(renderId, code).then(function (result) {
+        container.innerHTML = result.svg;
+        var svg = container.querySelector('svg');
+        if (svg) {
+          svg.style.width = '100%';
+          svg.style.height = 'auto';
+          svg.style.display = 'block';
+        }
+      }).catch(function (err) {
+        if (error) error.textContent = 'Mermaid render failed: ' + (err && err.message ? err.message : 'unknown error');
+      });
+    } catch (err) {
+      if (error) error.textContent = 'Mermaid render failed: ' + (err && err.message ? err.message : 'unknown error');
+    }
+  }
+
+  function renderCard(el, d) {
+    el.className = 'repo-card';
+    el.innerHTML =
+      '<div class="repo-card__header">' +
+        '<div class="repo-card__owner-group">' +
+          '<img class="repo-card__avatar" src="' + esc(d.repo.ownerAvatarUrl) + '" alt="' + esc(d.repo.owner) + '" />' +
+          '<div class="repo-card__meta">' +
+            '<a class="repo-card__name" href="' + esc(d.repo.htmlUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(d.repo.fullName) + '</a>' +
+            '<span class="repo-card__owner">' + esc(d.repo.owner) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<a class="repo-card__btn" href="' + esc(d.repo.htmlUrl) + '" target="_blank" rel="noopener noreferrer">View Repo</a>' +
+      '</div>' +
+      '<p class="repo-card__description">' + esc(d.repo.description || '') + '</p>' +
+      '<div class="repo-card__stats">' +
+        '<span class="repo-card__stat">⭐ ' + fmtNum(d.repo.stars) + '</span>' +
+        '<span class="repo-card__stat">🍴 ' + fmtNum(d.repo.forks) + '</span>' +
+        '<span class="repo-card__stat">🐞 ' + fmtNum(d.repo.openIssues) + '</span>' +
+        '<span class="repo-card__stat">' + esc(d.repo.primaryLanguage) + '</span>' +
+      '</div>' +
+      '<section class="repo-card__section">' +
+        '<h4 class="repo-card__section-title">Architecture Diagrams</h4>' +
+        '<div class="repo-card__diagram-tabs">' +
+          '<button class="repo-card__tab-btn" data-diagram-tab="mermaid">Mermaid</button>' +
+          '<button class="repo-card__tab-btn" data-diagram-tab="web">Interactive Web</button>' +
+          '<button class="repo-card__tab-btn" data-diagram-tab="plantuml">PlantUML</button>' +
+          '<button class="repo-card__tab-btn" data-diagram-tab="specs">Class Inventory</button>' +
+        '</div>' +
+        '<div class="repo-card__diagram-pane" data-diagram-pane="mermaid">' +
+          '<p class="repo-card__diagram-error" data-mermaid-error></p>' +
+          '<div class="repo-card__diagram-mermaid" data-mermaid-container></div>' +
+        '</div>' +
+        '<div class="repo-card__diagram-pane is-hidden" data-diagram-pane="web">' +
+          '<p class="repo-card__placeholder">Interactive Web Architecture hook is available. Wire this tab to your own renderer for fully interactive diagrams.</p>' +
+        '</div>' +
+        '<div class="repo-card__diagram-pane is-hidden" data-diagram-pane="plantuml">' +
+          '<pre class="repo-card__codeblock repo-card__codeblock--plantuml">' + esc(d.diagrams.plantUmlCode || '') + '</pre>' +
+        '</div>' +
+        '<div class="repo-card__diagram-pane is-hidden" data-diagram-pane="specs">' +
+          '<div class="repo-card__class-grid">' + renderClassRows(d.diagrams.classes) + '</div>' +
+        '</div>' +
+      '</section>' +
+      '<section class="repo-card__section">' +
+        '<h4 class="repo-card__section-title">Language Composition &amp; Tech Stack</h4>' +
+        '<div class="repo-card__language-list">' + renderLanguageRows(d.languages) + '</div>' +
+        '<div class="repo-card__tags">' +
+          '<span class="repo-card__tag">Primary: ' + esc(d.repo.primaryLanguage) + '</span>' +
+          '<span class="repo-card__tag">License: ' + esc(d.repo.license) + '</span>' +
+          '<span class="repo-card__tag">Branch: ' + esc(d.repo.defaultBranch) + '</span>' +
+        '</div>' +
+      '</section>' +
+      '<section class="repo-card__section">' +
+        '<h4 class="repo-card__section-title">Repository Structure (' + esc(d.repo.defaultBranch) + ')</h4>' +
+        '<pre class="repo-card__tree">' + esc(renderTree(d.treePaths)) + '</pre>' +
+      '</section>' +
+      '<div class="repo-card__tags">' +
+        (d.repo.topics || []).slice(0, 12).map(function (topic) { return '<span class="repo-card__tag">#' + esc(topic) + '</span>'; }).join('') +
+      '</div>';
+    bindDiagramUi(el, d);
+  }
+
+  function renderRepoCard(repoSlug, selector) {
+    var el = document.querySelector(selector || '#repo-card');
+    if (!el) return;
+    renderCard(el, REPO_DATA);
+
+    fetch('https://api.github.com/repos/' + encodeURIComponent(repoSlug))
+      .then(function (res) {
+        if (!res.ok) throw new Error('GitHub API error ' + res.status);
+        return res.json();
+      })
+      .then(function (r) {
+        var merged = JSON.parse(JSON.stringify(REPO_DATA));
+        merged.repo.fullName = r.full_name || merged.repo.fullName || repoSlug;
+        merged.repo.name = r.name || merged.repo.name;
+        merged.repo.htmlUrl = r.html_url || merged.repo.htmlUrl;
+        merged.repo.description = r.description || merged.repo.description;
+        merged.repo.owner = (r.owner && r.owner.login) || merged.repo.owner;
+        merged.repo.ownerAvatarUrl = (r.owner && r.owner.avatar_url) || merged.repo.ownerAvatarUrl;
+        merged.repo.primaryLanguage = r.language || merged.repo.primaryLanguage;
+        merged.repo.stars = r.stargazers_count || 0;
+        merged.repo.forks = r.forks_count || 0;
+        merged.repo.openIssues = r.open_issues_count || 0;
+        renderCard(el, merged);
+      })
+      .catch(function (err) {
+        console.warn('[repo-showcase-card] Could not fetch live data:', err);
+      });
+  }
+
+  document.querySelectorAll('[data-repo]').forEach(function (el) {
+    renderRepoCard(el.getAttribute('data-repo'), null);
+    el.id = el.id || 'repo-card';
+  });
+
+  var defaultEl = document.getElementById('repo-card');
+  if (defaultEl && !defaultEl.getAttribute('data-repo')) {
+    renderCard(defaultEl, REPO_DATA);
+  }
+
+  window.RepoCard = { render: renderRepoCard };
+}());
+  </script>
+
+</body>
+</html>

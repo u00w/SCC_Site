@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AdamKovacs360/CoCreatorSimulationGame — Repository Card</title>
+  <style>
+/* ── Reset ────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #020617;
+  padding: 32px 16px;
+}
+
+/* ── GitHub Repository Card ─────────────────────────────────────────── */
+/* Drop this file alongside repo-card.html and repo-card.js             */
+
+.repo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  max-width: 480px;
+  border-radius: 16px;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif;
+  font-size: 13px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.repo-card:hover {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 6px 32px rgba(99, 102, 241, 0.15);
+}
+
+/* Header ─────────────────────────────────────────────────────────────── */
+.repo-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.repo-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  flex-shrink: 0;
+}
+
+.repo-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.repo-card__name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #f1f5f9;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repo-card__name:hover {
+  text-decoration: underline;
+}
+
+.repo-card__language {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.repo-card__btn {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.repo-card__btn:hover {
+  background: #6366f1;
+}
+
+/* Description ────────────────────────────────────────────────────────── */
+.repo-card__description {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Stats ──────────────────────────────────────────────────────────────── */
+.repo-card__stats {
+  display: flex;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #1e293b;
+}
+
+.repo-card__stat {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.repo-card__stat strong {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+/* Light theme — add class="repo-card repo-card--light" for light mode ── */
+.repo-card--light {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.repo-card--light:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.repo-card--light .repo-card__name {
+  color: #0f172a;
+}
+
+.repo-card--light .repo-card__language,
+.repo-card--light .repo-card__stat {
+  color: #64748b;
+}
+
+.repo-card--light .repo-card__stat strong {
+  color: #1e293b;
+}
+
+.repo-card--light .repo-card__description {
+  color: #334155;
+}
+
+.repo-card--light .repo-card__stats {
+  border-top-color: #e2e8f0;
+}
+
+.repo-card--light .repo-card__avatar {
+  border-color: #cbd5e1;
+}
+  </style>
+</head>
+<body>
+
+  <!--
+    GitHub Repository Card — Self-contained embed
+    ─────────────────────────────────────────────
+    • Copy this entire file and open it in any browser, or paste the
+      <div> and the <style>/<script> blocks into your own page.
+    • To display a different repo, change data-repo below.
+    • Live data is fetched from the GitHub API automatically.
+  -->
+  <div id="repo-card" data-repo="AdamKovacs360/CoCreatorSimulationGame"></div>
+
+  <script>
+/**
+ * GitHub Repository Card — Vanilla JS
+ * ─────────────────────────────────────────────────────────────────────────
+ * Usage:
+ *   1. Add <div id="repo-card"></div> (or any element with data-repo) to
+ *      your page and include this script.
+ *   2. Optionally pass a GitHub repo slug to renderRepoCard() to fetch
+ *      live data and inject it into the card.
+ *
+ * The card HTML + CSS selectors match repo-card.html / repo-card.css.
+ * ─────────────────────────────────────────────────────────────────────────
+ */
+
+(function () {
+  'use strict';
+
+  /* Default data baked in at export time ---------------------------------- */
+  var REPO_DATA = {
+    full_name:        'AdamKovacs360/CoCreatorSimulationGame',
+    name:             'CoCreatorSimulationGame',
+    html_url:         'https://github.com/AdamKovacs360/CoCreatorSimulationGame',
+    description:      'This is a repo for a vr simulation game created for a co creative program in 2026 Unity',
+    owner_login:      'AdamKovacs360',
+    owner_avatar_url: 'https://avatars.githubusercontent.com/u/66362960?v=4',
+    language:         'C#',
+    stargazers_count: 0,
+    forks_count:      0,
+    open_issues_count:0,
+  };
+
+  /* Helpers ---------------------------------------------------------------- */
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtNum(n) {
+    return Number(n).toLocaleString();
+  }
+
+  /* Render ----------------------------------------------------------------- */
+  function renderCard(el, d) {
+    el.className = 'repo-card';
+    el.innerHTML =
+      '<div class="repo-card__header">' +
+        '<img class="repo-card__avatar" src="' + esc(d.owner_avatar_url) + '" alt="' + esc(d.owner_login) + '" />' +
+        '<div class="repo-card__meta">' +
+          '<a class="repo-card__name" href="' + esc(d.html_url) + '" target="_blank" rel="noopener noreferrer">' + esc(d.full_name) + '</a>' +
+          '<span class="repo-card__language">' + esc(d.language || 'Repository') + '</span>' +
+        '</div>' +
+        '<a class="repo-card__btn" href="' + esc(d.html_url) + '" target="_blank" rel="noopener noreferrer">View Repo</a>' +
+      '</div>' +
+      '<p class="repo-card__description">' + esc(d.description) + '</p>' +
+      '<div class="repo-card__stats">' +
+        '<span class="repo-card__stat">&#11088; <strong class="repo-card__stars">' + fmtNum(d.stargazers_count) + '</strong> stars</span>' +
+        '<span class="repo-card__stat">&#127860; <strong class="repo-card__forks">' + fmtNum(d.forks_count) + '</strong> forks</span>' +
+        '<span class="repo-card__stat">&#10007; <strong class="repo-card__issues">' + fmtNum(d.open_issues_count) + '</strong> issues</span>' +
+      '</div>';
+  }
+
+  /**
+   * Fetch live GitHub API data and re-render the card.
+   * @param {string} repoSlug  e.g. "owner/repo"
+   * @param {string} [selector] CSS selector for the card element (default: "#repo-card")
+   */
+  function renderRepoCard(repoSlug, selector) {
+    var el = document.querySelector(selector || '#repo-card');
+    if (!el) return;
+
+    // Render immediately with baked-in data while fetching
+    renderCard(el, REPO_DATA);
+
+    fetch('https://api.github.com/repos/' + encodeURIComponent(repoSlug))
+      .then(function (res) {
+        if (!res.ok) throw new Error('GitHub API error ' + res.status);
+        return res.json();
+      })
+      .then(function (r) {
+        renderCard(el, {
+          full_name:         r.full_name        || repoSlug,
+          name:              r.name             || repoSlug,
+          html_url:          r.html_url         || '',
+          description:       r.description      || '',
+          owner_login:       (r.owner && r.owner.login)      || '',
+          owner_avatar_url:  (r.owner && r.owner.avatar_url) || '',
+          language:          r.language         || '',
+          stargazers_count:  r.stargazers_count  || 0,
+          forks_count:       r.forks_count       || 0,
+          open_issues_count: r.open_issues_count || 0,
+        });
+      })
+      .catch(function (err) {
+        console.warn('[repo-card] Could not fetch live data:', err);
+      });
+  }
+
+  /* Auto-init -------------------------------------------------------------- */
+  // Render all elements that carry data-repo="owner/repo"
+  document.querySelectorAll('[data-repo]').forEach(function (el) {
+    renderRepoCard(el.getAttribute('data-repo'), null);
+    // Override selector to target this specific element
+    el.id = el.id || 'repo-card';
+  });
+
+  // Also render the default #repo-card if it exists and has no data-repo
+  var defaultEl = document.getElementById('repo-card');
+  if (defaultEl && !defaultEl.getAttribute('data-repo')) {
+    renderCard(defaultEl, REPO_DATA);
+  }
+
+  /* Public API ------------------------------------------------------------- */
+  window.RepoCard = { render: renderRepoCard };
+}());
+  </script>
+
+</body>
+</html>

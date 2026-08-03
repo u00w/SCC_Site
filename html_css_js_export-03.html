@@ -2656,6 +2656,10 @@
         setExpandedFolders(new Set());
       }, [repoFullName, defaultBranch]);
 
+      useLayoutEffect(() => {
+        scheduleParentHeightNotify();
+      }, [expandedFolders, hierarchy]);
+
       const toggleFolder = (path) => {
         setExpandedFolders((current) => {
           const next = new Set(current);
@@ -2663,6 +2667,8 @@
           else next.add(path);
           return next;
         });
+
+        requestAnimationFrame(() => scheduleParentHeightNotify());
       };
 
       const renderNode = (node, depth = 0) => {

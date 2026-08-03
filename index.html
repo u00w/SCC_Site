@@ -178,13 +178,14 @@
 
         .repo-section {
             width: min(100%, 1280px);
-            margin: 28px auto 0;
-            padding: 0 0 24px;
+            margin: 28px auto 12px;
+            padding: 8px 0 10px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
-            gap: 12px;
+            gap: 8px;
+            background: var(--bg);
         }
 
         .repo-section__heading {
@@ -200,6 +201,8 @@
             width: 100%;
             display: flex;
             justify-content: flex-start;
+            padding-bottom: 0;
+            background: transparent;
         }
 
         .repo-section__frame {
@@ -209,10 +212,11 @@
             min-height: 0;
             border: none;
             border-radius: 0;
-            overflow: hidden;
+            overflow: visible;
             background: transparent;
             box-shadow: none;
             display: block;
+            padding-bottom: 0;
         }
 
         .grid-wall {
@@ -426,6 +430,26 @@
         </div>
     </section>
     <script type="text/javascript">
+        function getRepoFrameContentHeight(frameDoc) {
+            const host = frameDoc?.getElementById('repo-hybrid-card') || frameDoc?.querySelector('main') || frameDoc?.body;
+            if (!host) {
+                return 0;
+            }
+
+            const rectHeight = host.getBoundingClientRect?.().height || 0;
+            const offsetHeight = host.offsetHeight || 0;
+            const clientHeight = host.clientHeight || 0;
+            const hostHeight = Math.max(rectHeight, offsetHeight, clientHeight, 0);
+            if (hostHeight > 0) {
+                return hostHeight;
+            }
+
+            const scrollHeight = host.scrollHeight || 0;
+            const bodyHeight = frameDoc?.body?.scrollHeight || 0;
+            const htmlHeight = frameDoc?.documentElement?.scrollHeight || 0;
+            return Math.max(scrollHeight, bodyHeight, htmlHeight, 0);
+        }
+
         function syncRepoFrameHeight() {
             const frame = document.querySelector('.repo-section__frame');
             if (!frame) {
@@ -435,17 +459,48 @@
             try {
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                 if (!frameDoc) {
-                    frame.style.height = '1400px';
+                    frame.style.height = '0px';
                     return;
                 }
 
-                const bodyHeight = frameDoc.body?.scrollHeight || 0;
-                const htmlHeight = frameDoc.documentElement?.scrollHeight || 0;
-                const nextHeight = Math.max(bodyHeight, htmlHeight, 1040);
+                const nextHeight = getRepoFrameContentHeight(frameDoc);
                 frame.style.height = `${nextHeight}px`;
             } catch (error) {
-                frame.style.height = '1100px';
+                frame.style.height = '0px';
             }
+        }
+
+        function observeRepoFrameContent(frame) {
+            if (!frame) {
+                return;
+            }
+
+            const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+            if (!frameDoc || !frameDoc.body) {
+                return;
+            }
+
+            if (frame.__repoFrameMutationObserver) {
+                frame.__repoFrameMutationObserver.disconnect();
+            }
+            if (frame.__repoFrameResizeObserver) {
+                frame.__repoFrameResizeObserver.disconnect();
+            }
+
+            frame.__repoFrameMutationObserver = new MutationObserver(() => {
+                syncRepoFrameHeight();
+            });
+            frame.__repoFrameMutationObserver.observe(frameDoc.body, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                characterData: true
+            });
+
+            frame.__repoFrameResizeObserver = new ResizeObserver(() => {
+                syncRepoFrameHeight();
+            });
+            frame.__repoFrameResizeObserver.observe(frameDoc.body);
         }
 
         function initRepoFrameSizing() {
@@ -454,21 +509,35 @@
                 return;
             }
 
-            frame.addEventListener('load', syncRepoFrameHeight);
+            const applySizing = () => {
+                observeRepoFrameContent(frame);
+                syncRepoFrameHeight();
+            };
+
+            frame.addEventListener('load', applySizing);
             window.addEventListener('resize', syncRepoFrameHeight);
-            window.addEventListener('load', syncRepoFrameHeight);
-            window.addEventListener('DOMContentLoaded', syncRepoFrameHeight);
+            window.addEventListener('load', applySizing);
+            window.addEventListener('DOMContentLoaded', applySizing);
 
             window.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'repo-card-size' && typeof event.data.height === 'number') {
-                    frame.style.height = `${Math.max(event.data.height, 1040)}px`;
+                    const nextHeight = Math.max(event.data.height, 0);
+                    frame.style.height = `${nextHeight}px`;
+                    requestAnimationFrame(() => {
+                        frame.style.height = `${nextHeight}px`;
+                        setTimeout(() => {
+                            const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                            const docHeight = frameDoc ? getRepoFrameContentHeight(frameDoc) : nextHeight;
+                            frame.style.height = `${Math.max(docHeight, nextHeight)}px`;
+                        }, 60);
+                    });
                 }
             });
 
-            setTimeout(syncRepoFrameHeight, 250);
-            setTimeout(syncRepoFrameHeight, 800);
-            setTimeout(syncRepoFrameHeight, 1600);
-            setTimeout(syncRepoFrameHeight, 2400);
+            setTimeout(applySizing, 250);
+            setTimeout(applySizing, 800);
+            setTimeout(applySizing, 1600);
+            setTimeout(applySizing, 2400);
         }
 
         initRepoFrameSizing();

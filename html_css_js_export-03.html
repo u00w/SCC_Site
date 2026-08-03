@@ -2670,6 +2670,9 @@
 
       useLayoutEffect(() => {
         scheduleParentHeightNotify();
+        requestAnimationFrame(() => scheduleParentHeightNotify());
+        setTimeout(scheduleParentHeightNotify, 0);
+        setTimeout(scheduleParentHeightNotify, 80);
       }, [expandedFolders, hierarchy]);
 
       const toggleFolder = (path) => {
@@ -2680,7 +2683,12 @@
           return next;
         });
 
-        requestAnimationFrame(() => scheduleParentHeightNotify());
+        requestAnimationFrame(() => {
+          scheduleParentHeightNotify();
+          setTimeout(scheduleParentHeightNotify, 0);
+          setTimeout(scheduleParentHeightNotify, 80);
+          setTimeout(scheduleParentHeightNotify, 180);
+        });
       };
 
       const renderNode = (node, depth = 0) => {
@@ -3071,16 +3079,43 @@
 
     let resizeNotifyTimer = null;
 
+    function getMeasuredCardHeight() {
+      const host = document.getElementById('repo-hybrid-card') || document.querySelector('main') || document.body;
+      if (!host) {
+        return 0;
+      }
+
+      const rectHeight = host.getBoundingClientRect?.().height || 0;
+      const offsetHeight = host.offsetHeight || 0;
+      const clientHeight = host.clientHeight || 0;
+
+      const preferredHeight = Math.max(rectHeight, offsetHeight, clientHeight, 0);
+      if (preferredHeight > 0) {
+        return preferredHeight;
+      }
+
+      const scrollHeight = host.scrollHeight || 0;
+      const bodyHeight = document.body?.scrollHeight || 0;
+      const htmlHeight = document.documentElement?.scrollHeight || 0;
+      return Math.max(scrollHeight, bodyHeight, htmlHeight, 0);
+    }
+
     function notifyParentHeight() {
       if (window.parent && window.parent !== window) {
-        const nextHeight = Math.max(document.body?.scrollHeight || 0, document.documentElement?.scrollHeight || 0, 1040);
+        const measured = getMeasuredCardHeight();
+        const nextHeight = Math.max(measured, 0);
         window.parent.postMessage({ type: 'repo-card-size', height: nextHeight }, '*');
       }
     }
 
     function scheduleParentHeightNotify() {
       clearTimeout(resizeNotifyTimer);
-      resizeNotifyTimer = setTimeout(notifyParentHeight, 80);
+      resizeNotifyTimer = setTimeout(() => {
+        notifyParentHeight();
+        setTimeout(notifyParentHeight, 60);
+        setTimeout(notifyParentHeight, 150);
+        setTimeout(notifyParentHeight, 300);
+      }, 50);
     }
 
     const resizeObserver = new ResizeObserver(() => scheduleParentHeightNotify());

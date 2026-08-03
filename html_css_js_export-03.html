@@ -3018,6 +3018,14 @@
               )}
             </section>
 
+            <section className="border border-slate-800 bg-slate-950/60 p-4 space-y-2">
+              <HybridFileExplorer
+                treeItems={data.treeItems}
+                repoFullName={data.repo.fullName}
+                defaultBranch={data.repo.defaultBranch}
+              />
+            </section>
+
             <section className="border border-slate-800 bg-slate-950/60 p-4 space-y-3">
               <h3 className="text-sm font-semibold text-white">Language Composition &amp; Tech Stack</h3>
               <div className="space-y-2">
@@ -3042,14 +3050,6 @@
                 <span className="px-2 py-1 bg-slate-800 border border-slate-700 text-[11px] text-slate-300">License: {data.repo.license}</span>
                 <span className="px-2 py-1 bg-slate-800 border border-slate-700 text-[11px] text-slate-300">Branch: {data.repo.defaultBranch}</span>
               </div>
-            </section>
-
-            <section className="border border-slate-800 bg-slate-950/60 p-4 space-y-2">
-              <HybridFileExplorer
-                treeItems={data.treeItems}
-                repoFullName={data.repo.fullName}
-                defaultBranch={data.repo.defaultBranch}
-              />
             </section>
 
             <section className="border border-slate-800 bg-slate-950/60 p-4 space-y-3">

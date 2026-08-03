@@ -10,8 +10,8 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="min-h-screen bg-slate-950 p-6" style="min-height:auto; overflow:visible;">
-  <div id="repo-hybrid-card"></div>
+<body class="min-h-screen bg-slate-950" style="min-height:auto; margin:0; padding:0; overflow:visible;">
+  <div id="repo-hybrid-card" style="min-height:100%;"></div>
 
   <script type="text/babel">
     const { useEffect, useLayoutEffect, useMemo, useRef, useState } = React;
@@ -2949,8 +2949,8 @@
       const totalLanguageBytes = data.languages.reduce((sum, item) => sum + item.bytes, 0);
 
       return (
-        <main className="max-w-6xl mx-auto">
-          <article className="p-5 bg-slate-900 border border-slate-800 text-slate-100 shadow-xl space-y-5">
+        <main className="w-full">
+          <article className="p-5 bg-slate-900 border-0 text-slate-100 shadow-none space-y-5">
             <div className="flex justify-end">
               <a href={data.repo.htmlUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-yellow-300 hover:text-yellow-200">View on GitHub</a>
             </div>

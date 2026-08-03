@@ -3051,7 +3051,39 @@
       );
     }
 
+    let resizeNotifyTimer = null;
+
+    function notifyParentHeight() {
+      if (window.parent && window.parent !== window) {
+        const nextHeight = Math.max(document.body?.scrollHeight || 0, document.documentElement?.scrollHeight || 0, 1400);
+        window.parent.postMessage({ type: 'repo-card-size', height: nextHeight }, '*');
+      }
+    }
+
+    function scheduleParentHeightNotify() {
+      clearTimeout(resizeNotifyTimer);
+      resizeNotifyTimer = setTimeout(notifyParentHeight, 80);
+    }
+
+    const resizeObserver = new ResizeObserver(() => scheduleParentHeightNotify());
+    if (document.body) {
+      resizeObserver.observe(document.body);
+    }
+
+    const mutationObserver = new MutationObserver(() => scheduleParentHeightNotify());
+    if (document.body) {
+      mutationObserver.observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+    }
+
+    window.addEventListener('load', notifyParentHeight);
+    window.addEventListener('resize', notifyParentHeight);
+
+    setTimeout(notifyParentHeight, 150);
+    setTimeout(notifyParentHeight, 500);
+    setTimeout(notifyParentHeight, 1200);
+
     ReactDOM.createRoot(document.getElementById('repo-hybrid-card')).render(<RepoCard />);
+    setTimeout(notifyParentHeight, 400);
   </script>
 </body>
 </html>

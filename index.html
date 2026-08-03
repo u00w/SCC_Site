@@ -434,18 +434,44 @@
 
             try {
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-                const bodyHeight = frameDoc?.body?.scrollHeight || 0;
-                const htmlHeight = frameDoc?.documentElement?.scrollHeight || 0;
-                const nextHeight = Math.max(bodyHeight, htmlHeight, 900);
+                if (!frameDoc) {
+                    frame.style.height = '1400px';
+                    return;
+                }
+
+                const bodyHeight = frameDoc.body?.scrollHeight || 0;
+                const htmlHeight = frameDoc.documentElement?.scrollHeight || 0;
+                const nextHeight = Math.max(bodyHeight, htmlHeight, 1400);
                 frame.style.height = `${nextHeight}px`;
             } catch (error) {
-                frame.style.height = '1200px';
+                frame.style.height = '1600px';
             }
         }
 
-        window.addEventListener('load', syncRepoFrameHeight);
-        window.addEventListener('resize', syncRepoFrameHeight);
-        window.addEventListener('DOMContentLoaded', syncRepoFrameHeight);
+        function initRepoFrameSizing() {
+            const frame = document.querySelector('.repo-section__frame');
+            if (!frame) {
+                return;
+            }
+
+            frame.addEventListener('load', syncRepoFrameHeight);
+            window.addEventListener('resize', syncRepoFrameHeight);
+            window.addEventListener('load', syncRepoFrameHeight);
+            window.addEventListener('DOMContentLoaded', syncRepoFrameHeight);
+
+            window.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'repo-card-size' && typeof event.data.height === 'number') {
+                    frame.style.height = `${Math.max(event.data.height, 1400)}px`;
+                }
+            });
+
+            setTimeout(syncRepoFrameHeight, 250);
+            setTimeout(syncRepoFrameHeight, 800);
+            setTimeout(syncRepoFrameHeight, 1600);
+            setTimeout(syncRepoFrameHeight, 2400);
+        }
+
+        initRepoFrameSizing();
 
         const cloudName = window.__APP_CONFIG__?.CLOUDINARY_CLOUD_NAME || "";
         const defaultFolderName = "SCC";

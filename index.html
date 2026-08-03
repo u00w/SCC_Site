@@ -40,12 +40,25 @@
 
         .top-row {
             margin-top: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 12px;
             padding: 0 6px;
             display: flex;
-            align-items: flex-end;
+            align-items: flex-start;
             justify-content: space-between;
             gap: 16px;
+        }
+
+        .top-row__left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .top-row__right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
         .title {
@@ -85,6 +98,22 @@
             background: none;
             cursor: pointer;
             transition: opacity 160ms ease;
+        }
+
+        .header-mark-image {
+            max-height: 42px;
+            width: auto;
+            display: block;
+            object-fit: contain;
+            /* Colorize dark source artwork to match the theme text color. */
+            filter: brightness(0) saturate(100%) invert(76%) sepia(70%) saturate(420%) hue-rotate(8deg) brightness(102%) contrast(104%);
+            opacity: 0.92;
+        }
+
+        .gallery-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin: 0 6px 8px;
         }
 
         .refresh-btn:hover,
@@ -434,16 +463,21 @@
 <body>
     <div class="page-shell">
         <div class="top-row">
-            <div>
+            <div class="top-row__left">
                 <h1 class="title">STUDENTS AS CO-CREATORS</h1>
                 <p class="subtitle">Emergency vehicle simulation for collaborative student design, testing, and iteration.</p>
             </div>
-            <button id="refresh-button" class="refresh-btn" type="button">refresh</button>
+            <div class="top-row__right">
+                <img class="header-mark-image" src="/UOW_Logo_Trans.png" alt="UOW logo" onerror="this.style.display='none'">
+            </div>
         </div>
         <section class="content-section" aria-label="Executive Summary">
             <h2 class="content-section__heading">Executive Summary:</h2>
             <p>Students from the Computer Games Development BSc worked with a Senior Lecturer and Director of the Immersive development Lab to create a software driving simulation with advanced physical control and virtual reality interaction and display options. This project expanded on work they had done in the 3D Interactive Media Development and XR Multimodal Interaction modules and serves as an important template for synthesizing concepts learned in modules to create a complete template project.</p>
         </section>
+        <div class="gallery-controls">
+            <button id="refresh-button" class="refresh-btn" type="button">refresh</button>
+        </div>
         <div id="my-gallery">
             <div class="grid-stack" id="grid-stack"></div>
         </div>
@@ -452,7 +486,6 @@
                 <button id="autoplay-toggle-button" class="autoplay-toggle-btn" type="button"><span class="autoplay-toggle-label">autoplay videos </span><span id="autoplay-toggle-state" class="autoplay-toggle-state">off</span></button>
                 <div id="status" hidden></div>
             </div>
-            <img class="footer-mark-image" src="/UOW_Logo_Trans.png" alt="UOW logo" onerror="this.style.display='none'">
         </div>
     </div>
     <section class="content-section" aria-label="Aims">

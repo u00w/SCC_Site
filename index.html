@@ -176,12 +176,17 @@
             background: transparent;
         }
 
+        .page-shell > .repo-section {
+            width: min(100%, 1280px);
+            margin: 28px auto 0;
+        }
+
         .repo-section {
             width: 100%;
             margin-top: 28px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: stretch;
             justify-content: center;
             gap: 12px;
         }
@@ -196,19 +201,20 @@
         }
 
         .repo-section__frame-wrapper {
-            width: min(100%, 1040px);
+            width: 100%;
             display: flex;
             justify-content: center;
         }
 
         .repo-section__frame {
-            width: min(100%, 980px);
-            min-height: 920px;
+            width: min(100%, 100%);
+            height: auto;
+            min-height: 0;
             border: none;
             border-radius: 12px;
-            overflow: hidden;
-            background: #020617;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+            overflow: visible;
+            background: transparent;
+            box-shadow: none;
         }
 
         .grid-wall {
